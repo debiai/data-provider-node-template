@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: DebiAI data provider API
-  version: "1.0"
+  version: "0.15.0"
   description: >-
     This API describe what the endpoints a service that want to be a DebiAI data
     provider need to have

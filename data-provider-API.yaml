@@ -1,0 +1,362 @@
+openapi: 3.0.0
+info:
+  title: DebiAI data provider API
+  version: "1.0"
+  description: >-
+    This API describe what the endpoints a service that want to be a DebiAI data
+    provider need to have
+  contact:
+    name: Tom Mansion
+    email: tom.mansion@irt-systemx.fr
+servers:
+  - url: "http://localhost:3000"
+tags:
+  - name: views
+  - name: data
+paths:
+  /debiai/info:
+    get:
+      x-eov-operation-id: info
+      x-eov-operation-handler: debiai.js
+      description: Get some general informations about how DebiAI can use this service
+      tags:
+        - views
+      responses:
+        "200":
+          description: Service general informations
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Project views that can be selected by a DebiAI User, each key is a view ID
+                minProperties: 1
+                additionalProperties:
+                  type: object
+                  description: A view
+                  required:
+                    - columns
+                    - expectedResults
+                  properties:
+                    name:
+                      type: string
+                      description: View name, the view ID by default
+                      minLength: 1
+                      maxLength: 30
+                    columns:
+                      type: array
+                      description: Columns that DebiAI will be expecting for the view data
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            maxLength: 30
+                            minLength: 1
+                            example: Image name
+                          category:
+                            type: string
+                            description: >-
+                              Category of the column that will be used to select
+                              the column more easely
+                            default: other
+                            enum:
+                              - groundtruth
+                              - input
+                              - context
+                              - other
+                            minLength: 1
+                            maxLength: 30
+                            example: Groundthruth
+                          type:
+                            type: string
+                            enum:
+                              - auto
+                              - text
+                              - number
+                              - boolean
+                            default: auto
+                            description: >-
+                              The type of the column values, it will be guessed by
+                              default by DebiAI, but it can be forced. Forcing a
+                              type can be useful if we want to consider numbers
+                              like 10, 100, 1000 as categories.
+                        required:
+                          - name
+                    expectedResults:
+                      type: array
+                      description: Columns that DebiAI will be expecting for the view model results
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            maxLength: 30
+                            minLength: 1
+                            example: Image name
+                          category:
+                            type: string
+                            description: >-
+                              Category of the column that will be used to select
+                              the column more easely
+                            default: Other
+                            minLength: 1
+                            maxLength: 30
+                            example: Groundthruth
+                          type:
+                            type: string
+                            enum:
+                              - auto
+                              - text
+                              - number
+                              - boolean
+                            default: auto
+                            description: >-
+                              The type of the column values, it will be guessed by
+                              default by DebiAI, but it can be forced. Forcing a
+                              type can be useful if we want to consider numbers
+                              like 10, 100, 1000 as categories.
+                        required:
+                          - name
+                    dataUploadPatchSize:
+                      type: number
+                      description: |-
+                        Number of data that DebiAI will try to download per patch
+                        If set to -1, DebiAI won't limit the request
+                      default: 500
+                    modelResultsUploadPatchSize:
+                      type: number
+                      description: >-
+                        Number of model results that DebiAI will try to download
+                        per patch
+
+                        If set to -1, DebiAI won't limit the request
+                      default: 500
+  /debiai/view/{view}/dataIdList:
+    parameters:
+      - schema:
+          type: string
+          minLength: 1
+          example: Project 1
+        name: view
+        in: path
+        description: View name to get the data ID list
+        required: true
+    get:
+      x-eov-operation-id: dataIdList
+      x-eov-operation-handler: debiai.js
+      description: >-
+        Get a ID list of all available data in the view, this endpoint need to
+        work with the view list provided in the info endoint
+
+        A those ID will be used by DebiAI to request data or results later
+      tags:
+        - data
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                uniqueItems: true
+                description: "The view full list of data ID, each ID must be unique  "
+                items:
+                  anyOf:
+                    - type: string
+                    - type: number
+                    - type: integer
+                  minLength: 1
+              examples:
+                example:
+                  value:
+                    - MyDataId_1
+                    - MyDataId_2
+                    - ...
+  /debiai/view/{view}/data:
+    parameters:
+      - schema:
+          type: string
+          minLength: 1
+          example: Project 1
+        name: view
+        in: path
+        description: View name to get the data ID list
+        required: true
+    post:
+      x-eov-operation-id: data
+      x-eov-operation-handler: debiai.js
+      description: >-
+        Get the data to be displayed into DebiAI from the given data ID list,
+        the requested IDs will be those given by the endpoint dataIdList. The
+        number of data asked won't exceed the "dataUploadPatchSize" if it was
+        specified in the debiai/info endpoint
+      tags:
+        - data
+      responses:
+        "200":
+          description: |
+            The view data for each requested id.
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Each key of the object is a dataId
+                additionalProperties:
+                  type: array
+                  description: >-
+                    The number or items in the array need to be equal to
+                    the number of column provided with the info path. Each n value will be mapped to
+                    the n'th column.
+
+                    Null values aren't allowed at the moment
+                  items:
+                    anyOf:
+                      - type: string
+                      - type: number
+                      - type: integer
+                      - type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              description: List of requested dataId
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: integer
+  /debiai/view/{view}/models:
+    parameters:
+      - schema:
+          type: string
+          minLength: 1
+          example: Project 1
+        name: view
+        in: path
+        description: View name to get the data ID list
+        required: true
+    get:
+      x-eov-operation-id: modelList
+      x-eov-operation-handler: debiai.js
+      description: Tell DebiAI which models are available for the given view
+      tags:
+        - models
+      responses:
+        "200":
+          description: A model list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                  properties:
+                    id:
+                      type: string
+                      description: Model ID
+                    name:
+                      type: string
+                      description: Model name, the model ID by default
+                    nbResults:
+                      type: number
+                      description: Number of results that the model can provide
+                      default: 0
+  /debiai/view/{view}/model/{modelId}/evaluatedDataIdList:
+    parameters:
+      - schema:
+          type: string
+          minLength: 1
+          example: Project 1
+        name: view
+        in: path
+        description: View name to get the data ID list
+        required: true
+      - schema:
+          type: string
+          minLength: 1
+          example: Model 1
+        name: modelId
+        in: path
+        description: Model id to get the data ID list
+        required: true
+    get:
+      x-eov-operation-id: modelEvaluatedDataIdList
+      x-eov-operation-handler: debiai.js
+      description: Tell DebiAI which models are available for the given view
+      tags:
+        - models
+      responses:
+        "200":
+          description: The model data id list that the model has been evaluated on
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  anyOf:
+                    - type: string
+                    - type: number
+                    - type: integer
+  /debiai/view/{view}/model/{modelId}/results:
+    parameters:
+      - schema:
+          type: string
+          minLength: 1
+          example: Project 1
+        name: view
+        in: path
+        description: View name to get the data ID list
+        required: true
+      - schema:
+          type: string
+          minLength: 1
+          example: Model 1
+        name: modelId
+        in: path
+        description: Model id to get the data ID list
+        required: true
+    post:
+      x-eov-operation-id: modelResults
+      x-eov-operation-handler: debiai.js
+      description: Gives the results of a model from a given data ID list
+      tags:
+        - models
+      responses:
+        "200":
+          description: The model results for each requested data ID
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Each key of the object is a dataId
+                additionalProperties:
+                  type: array
+                  description: >-
+                    The number or items in the array need to be equal to
+                    the number of expected model results provided with the info path.
+                    Each n value will be mapped to the n'th column.
+
+                    Null values aren't allowed at the moment
+                  items:
+                    anyOf:
+                      - type: string
+                      - type: number
+                      - type: integer
+                      - type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              description: List of requested dataId
+              items:
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: integer
+
+components:
+  schemas: {}

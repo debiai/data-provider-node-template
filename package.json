@@ -1,0 +1,25 @@
+{
+  "name": "debiai-data-provider",
+  "version": "0.15.0",
+  "description": "DebiAi data-provider NodeJs template",
+  "author": "Tom Mansion",
+  "main": "index.js",
+  "scripts": {
+    "serve": "nodemon src/index.js",
+    "test": "node_modules/.bin/mocha --bail test/"
+  },
+  "engines": {
+    "node": ">=16.13.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "express-openapi-validator": "^4.13.5",
+    "ini": "^2.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^9.2.1",
+    "supertest": "^6.2.2"
+  },
+  "license": "Apache-2.0"
+}

@@ -1,45 +1,31 @@
-// My project data
-const projectId = "project_1"
 
-const projectName = "Project 1"
-
-const projectColumns = [
-    { name: "Context 1", type: "text", category: "context" },
-    { name: "Ground thruth 1", type: "number", category: "groundtruth" },
-    { name: "Input 1", type: "number", category: "input" },
-]
-const projectModelResults = [
-    { name: "Model prediction", type: "number" },
-    { name: "Model error", type: "number" },
-]
-
-const projectData = [
-    // ID, Context, Ground truth, Input
-    [1, "Context a", 11, 4],
-    [2, "Context b", 23, 2],
-    [3, "Context c", -2, 0]
-]
-
-const projectModels = {
-    model_1: [
-        [1, 9, -2],
-        [2, 26, 32],
-    ],
-    model_2: [
-        [2, 23, 0],
-        [3, -6, -4],
-    ],
-}
+// To have a fonctionnal data-provider, you will need to provide the following functions:
 
 exports.info = (req, res) => {
     // Return the list of projects with their columns and results
+
     try {
-        const projects = {}
-        projects[projectId] = {
-            name: projectName,
-            columns: projectColumns,
-            expectedResults: projectModelResults
+        const projects = {
+            project_1: {
+                name: "Project 1",
+                columns: [
+                    { name: "Context 1", type: "text" },
+                    { name: "Ground thruth 1", type: "number" },
+                    { name: "Input 1", type: "number" },
+                ],
+                expectedResults: [
+                    { name: "Model prediction", type: "number" },
+                    { name: "Model error", type: "number" },
+                ],
+                nbSamples: 3,
+            }
         }
+
+        // 'project_1' is the project id, it will be used as a path parameter in the API
+        // 'name' is the name of the project
+        // 'columns' is the list of columns of the project data
+        // 'expectedResults' is the list of columns of the model results, it can be empty
+        // 'nbSamples' [optional] is the number of samples in the project data
 
         res.status(200).send(projects)
     } catch (error) {
@@ -51,13 +37,13 @@ exports.info = (req, res) => {
 exports.dataIdList = (req, res) => {
     // Return the list of the project data ids
     try {
-        const project = req.openapi.pathParams.view;
+        const requestedProjectId = req.openapi.pathParams.view;
 
-        if (project === projectId) {
-            res.status(200).send(projectData.map(row => row[0]))
-        } else {
-            res.status(404).send("Project not found")
-        }
+        const projectDataIds = [1, 2, 3]
+        // The data ids are 1, 2, 3, they will be requested by DebiAI
+        // they can be in any format, but please avoid caracters like : / ( ) < > . ; or ,
+
+        res.status(200).send(projectDataIds)
     } catch (error) {
         console.log(error)
         res.status(500).send(error)
@@ -67,18 +53,23 @@ exports.dataIdList = (req, res) => {
 exports.data = (req, res) => {
     // Return the data for the given data ids
     try {
-        const project = req.openapi.pathParams.view;
-        const requestedDataIds = req.body;
+        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedDataIds = req.body; // List of data ids requested by DebiAI
 
-        if (project === projectId) {
-            const data = projectData.filter(row => requestedDataIds.includes(row[0]))
-            const dataRet = {}
-            data.forEach(row => { dataRet[row[0]] = row.slice(1) })
-
-            res.status(200).send(dataRet)
-        } else {
-            res.status(404).send("Project not found")
+        // If the requested ids are [1, 2, 3], the following data will be returned:
+        const projectData = {
+            1: ["Context a", 11, 4],
+            2: ["Context b", 23, 2],
+            3: ["Context c", -2, 0]
         }
+
+        // The object keys are the data ids, the values are the data
+        // The data array follows the columns order defined in the project info
+        // Data containing '', null or undefined aren't supported by DebiAI
+        // Data in a format other than string or number aren't supported by DebiAI
+
+        res.status(200).send(projectData)
+
     } catch (error) {
         console.log(error)
         res.status(500).send(error)
@@ -88,20 +79,27 @@ exports.data = (req, res) => {
 exports.modelList = (req, res) => {
     // Return the list of the project models
     try {
-        const project = req.openapi.pathParams.view;
-        if (project === projectId) {
-            const modelsToSend = Object.keys(projectModels).map(modelId => {
-                return {
-                    id: modelId,
-                    name: modelId,
-                    nbSamples: projectModels[modelId].length
-                }
-            })
-            res.status(200).send(modelsToSend)
+        const requestedProjectId = req.openapi.pathParams.view;
 
-        } else {
-            res.status(404).send("Project not found")
-        }
+        const projectModels = [
+            {
+                id: "model_1",
+                name: "Model 1",
+                nbResults: 2
+            },
+            {
+                id: "model_2",
+                name: "Model 2",
+                nbResults: 2
+            },
+        ]
+
+        // The model ids are 'model_1' and 'model_2', they will be requested by DebiAI
+        // The name is optional, it will be replaced by the model id if not provided
+        // The nbResults is optional, it will be replaced by 0 if not provided
+
+        res.status(200).send(projectModels)
+
     } catch (error) {
         console.log(error)
         res.status(500).send(error)
@@ -109,16 +107,22 @@ exports.modelList = (req, res) => {
 }
 
 exports.modelEvaluatedDataIdList = (req, res) => {
-    // Return the list of data ids that have been evaluated by the model
+    // Return a list of data ids that the model have been evaluated on
     try {
-        const project = req.openapi.pathParams.view;
-        const modelId = req.openapi.pathParams.modelId;
+        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedModelId = req.openapi.pathParams.modelId;
 
-        if (project === projectId && modelId in projectModels) {
-            res.status(200).send(projectModels[modelId].map(row => row[0]))
-        } else {
-            res.status(404).send("Project or model not found")
-        }
+        if (requestedModelId == "model_1")
+            res.status(200).send([1, 2])
+        else if (requestedModelId == "model_2")
+            res.status(200).send([2, 3])
+        else
+            res.status(404).send("Model not found")
+
+        // The provided ids have to be in the data ids list
+        // Here, the Model 1 has been evaluated on data ids 1 and 2
+        // and the Model 2 has been evaluated on data ids 2 and 3
+
     } catch (error) {
         console.log(error)
         res.status(500).send(error)
@@ -128,23 +132,27 @@ exports.modelEvaluatedDataIdList = (req, res) => {
 exports.modelResults = (req, res) => {
     // Return the model results for the given data ids
     try {
-        const project = req.openapi.pathParams.view;
-        const modelId = req.openapi.pathParams.modelId;
+        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedModelId = req.openapi.pathParams.modelId;
         const requestedDataIds = req.body;
 
-        if (project === projectId && modelId in projectModels) {
-            const modelResults = {}
-
-            projectModels[modelId].forEach(row => {
-                if (requestedDataIds.includes(row[0])) {
-                    modelResults[row[0]] = row.slice(1)
-                }
-            })
-
-            res.status(200).send(modelResults)
-        } else {
-            res.status(404).send("Project or model not found")
+        const model1Results = {
+            1: [9, -2],
+            2: [26, 3],
         }
+        const model2Results = {
+            2: [23, 0],
+            3: [-6, -4],
+        }
+
+        const modelResults = requestedModelId == "model_1" ? model1Results : model2Results
+
+        const results = {}
+        for (const dataId of requestedDataIds) if (modelResults[dataId]) results[dataId] = modelResults[dataId]
+
+        // The results object keys are the requested data ids, the values are the model results
+        // The model results arrays follow the expectedResults order defined in the project info
+        res.status(200).send(results)
 
     } catch (error) {
         console.log(error)

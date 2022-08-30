@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: DebiAI data provider API
-  version: "0.15.0"
+  version: "0.15.1"
   description: >-
     This API describe what the endpoints a service that want to be a DebiAI data
     provider need to have
@@ -23,7 +23,7 @@ paths:
         - views
       responses:
         "200":
-          description: Service general informations
+          description: Projets informations
           content:
             application/json:
               schema:
@@ -117,20 +117,10 @@ paths:
                               like 10, 100, 1000 as categories.
                         required:
                           - name
-                    dataUploadPatchSize:
-                      type: number
-                      description: |-
-                        Number of data that DebiAI will try to download per patch
-                        If set to -1, DebiAI won't limit the request
-                      default: 500
-                    modelResultsUploadPatchSize:
-                      type: number
-                      description: >-
-                        Number of model results that DebiAI will try to download
-                        per patch
-
-                        If set to -1, DebiAI won't limit the request
-                      default: 500
+                    nbSamples:
+                      type: integer
+                      description: Optional number of samples that can be provided by the project for display purpose
+                      default: null
   /debiai/view/{view}/dataIdList:
     parameters:
       - schema:

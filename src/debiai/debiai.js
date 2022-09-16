@@ -159,3 +159,25 @@ exports.modelResults = (req, res) => {
         res.status(500).send(error)
     }
 }
+
+// Selections
+exports.selectionList = (req, res) => {
+    // Return the project selections
+    try {
+        res.status(200).send([])
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error)
+    }
+}
+
+exports.selectionDataIdList = (req, res) => {
+    // Return the list of a selection samples ids
+    try {
+        res.status(200).send([])
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error)
+    }
+}
+

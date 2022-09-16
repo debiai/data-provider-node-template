@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: DebiAI data provider API
-  version: "0.15.1"
+  version: "0.16.6"
   description: >-
     This API describe what the endpoints a service that want to be a DebiAI data
     provider need to have
@@ -121,6 +121,8 @@ paths:
                       type: integer
                       description: Optional number of samples that can be provided by the project for display purpose
                       default: null
+
+  # Data
   /debiai/view/{view}/dataIdList:
     parameters:
       - schema:
@@ -216,6 +218,8 @@ paths:
                   - type: string
                   - type: number
                   - type: integer
+
+  # Models
   /debiai/view/{view}/models:
     parameters:
       - schema:
@@ -224,7 +228,7 @@ paths:
           example: Project 1
         name: view
         in: path
-        description: View name to get the data ID list
+        description: View name to get the model list
         required: true
     get:
       x-eov-operation-id: modelList
@@ -348,5 +352,78 @@ paths:
                   - type: number
                   - type: integer
 
-components:
-  schemas: {}
+  # Selections
+  /debiai/view/{view}/selections:
+    parameters:
+      - schema:
+          type: string
+          minLength: 1
+          example: Project 1
+        name: view
+        in: path
+        description: View name to get the selection list
+        required: true
+    get:
+      x-eov-operation-id: selectionList
+      x-eov-operation-handler: debiai.js
+      description: Tell DebiAI which selections are available for the given view
+      tags:
+        - selections
+      responses:
+        "200":
+          description: A selection list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                  properties:
+                    id:
+                      type: string
+                      description: Selection ID
+                    name:
+                      type: string
+                      description: Selection name, the selection ID by default
+                    nbSamples:
+                      type: number
+                      description: Number of samples in the selection
+                      default: 0
+  /debiai/view/{view}/selection/{selectionId}/selectedDataIdList:
+    parameters:
+      - schema:
+          type: string
+          minLength: 1
+          example: Project 1
+        name: view
+        in: path
+        description: View name to get the data ID list
+        required: true
+      - schema:
+          type: string
+          minLength: 1
+          example: Selection 1
+        name: selectionId
+        in: path
+        description: Selection id to get the selected data ID list from
+        required: true
+    get:
+      x-eov-operation-id: selectionDataIdList
+      x-eov-operation-handler: debiai.js
+      description: Tell DebiAI the samples selected by the a selection
+      tags:
+        - selections
+      responses:
+        "200":
+          description: The selection data id list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  anyOf:
+                    - type: string
+                    - type: number
+                    - type: integer

@@ -1,6 +1,6 @@
 {
   "name": "debiai-data-provider",
-  "version": "0.15.1",
+  "version": "0.17.0",
   "description": "DebiAi data-provider NodeJs template",
   "author": "Tom Mansion",
   "main": "index.js",
@@ -14,7 +14,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.3",
-    "express-openapi-validator": "^4.13.5",
+    "express-openapi-validator": "^4.13.8",
     "ini": "^2.0.0",
     "nodemon": "^2.0.20"
   },

@@ -125,8 +125,6 @@ paths:
   # Data
   /debiai/view/{view}/dataIdList:
     parameters:
-
-
       - in: path
         schema:
           type: string
@@ -147,9 +145,6 @@ paths:
         name: to
         description: Ending point to fetch data Ids
         required: false
-
-
-
     get:
       x-eov-operation-id: dataIdList
       x-eov-operation-handler: debiai.js

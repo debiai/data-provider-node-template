@@ -50,7 +50,8 @@ exports.dataIdList = (req, res) => {
     
         if (from !== undefined && to !== undefined) {
             // Fetch data with from and to filter;
-            res.status(200).send(projectDataIds.slice(from, to));
+            // Add + 1 because slice function excluded last value
+            res.status(200).send(projectDataIds.slice(from, to + 1));
         }
         else {
             res.status(200).send(projectDataIds)

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: DebiAI data provider API
-  version: "0.16.6"
+  version: "0.18.0"
   description: >-
     This API describe what the endpoints a service that want to be a DebiAI data
     provider need to have
@@ -125,14 +125,31 @@ paths:
   # Data
   /debiai/view/{view}/dataIdList:
     parameters:
-      - schema:
+
+
+      - in: path
+        schema:
           type: string
           minLength: 1
           example: Project 1
         name: view
-        in: path
         description: View name to get the data ID list
         required: true
+      - in : query
+        schema:
+          type: integer
+        name: from
+        description: Starting point to fetch data Ids
+        required: false
+      - in : query
+        schema:
+          type: integer
+        name: to
+        description: Ending point to fetch data Ids
+        required: false
+
+
+
     get:
       x-eov-operation-id: dataIdList
       x-eov-operation-handler: debiai.js

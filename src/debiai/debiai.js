@@ -38,12 +38,23 @@ exports.dataIdList = (req, res) => {
     // Return the list of the project data ids
     try {
         const requestedProjectId = req.openapi.pathParams.view;
-
+        
         const projectDataIds = [1, 2, 3]
         // The data ids are 1, 2, 3, they will be requested by DebiAI
         // they can be in any format, but please avoid caracters like : / ( ) < > . ; or ,
 
-        res.status(200).send(projectDataIds)
+        // In case of a nulber of sample > 10000, we will ask for a sequensed amount of sample ID
+        // Set variables only if from & to in query parameters*
+        const from = req.query.from
+        const to = req.query.to  
+    
+        if (from !== undefined && to !== undefined) {
+            // Fetch data with from and to filter;
+            res.status(200).send(projectDataIds.slice(from, to));
+        }
+        else {
+            res.status(200).send(projectDataIds)
+        }
     } catch (error) {
         console.log(error)
         res.status(500).send(error)

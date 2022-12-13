@@ -193,3 +193,15 @@ exports.selectionDataIdList = (req, res) => {
     }
 }
 
+exports.createSelection = (req, res) => {
+    try {
+        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedDataIds = req.body;
+
+        res.status(204).end()
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+}
+

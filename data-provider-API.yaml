@@ -416,11 +416,16 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              description: List ids in the selection
-              items:
+              type: object
+              properties:
+                name:
                   type: string
-
+                idList:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - name
   /debiai/view/{view}/selection/{selectionId}/selectedDataIdList:
     parameters:
       - schema:

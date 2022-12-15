@@ -175,8 +175,29 @@ exports.modelResults = (req, res) => {
 // Selections
 exports.selectionList = (req, res) => {
     // Return the project selections
+    /*
+        Response body : [{
+            "id": "string",
+            "name": "string",
+            "nbSamples": "number"
+        }]
+    */
     try {
-        res.status(200).send([])
+        const requestedProjectId = req.openapi.pathParams.view;
+        const firstSelection = {
+            "id": "first-selection",
+            "name": "First selection",
+            "nbSamples": 2
+        }
+        const secondSelection = {
+            "id": "second-selection",
+            "name": "second selection"
+        }
+        const thirdSelection = {
+            "id": "third-selection"
+        }
+
+        res.status(200).send([firstSelection, secondSelection, thirdSelection])
     } catch (error) {
         console.log(error)
         res.status(500).send(error)
@@ -185,15 +206,51 @@ exports.selectionList = (req, res) => {
 
 exports.selectionDataIdList = (req, res) => {
     // Return the list of a selection samples ids
+    /*
+        Response body : 
+        ["id 1", 10, "id 3", "id 4", "39"]
+    */
     try {
-        res.status(200).send([])
+        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedSelectionId = req.openapi.pathParams.selectionId
+
+        let idList = []
+        if (requestedSelectionId === "first-selection") {
+            idList = [1, 2] 
+        } 
+        else if (requestedSelectionId === "second-selection") {
+            idList = [2, 3]
+        }
+        else if (requestedSelectionId === "third-selection") {
+            idList = [1]
+        }
+
+        res.status(200).send(idList)
     } catch (error) {
         console.log(error)
         res.status(500).send(error)
     }
 }
 
+
+
 exports.createSelection = (req, res) => {
+    // Return no content http response (204)
+    /* Create a selection from the idList ids given in request body
+    The route is called by DebiAI user Interface
+    Optionnal route 
+    If the data provider is not designed to support creation, throw an error
+
+    RequestBody: 
+    {
+        "name": "my selection",
+        "idList": [
+            "sample-1",
+            "sample-2",
+            "sample-3"
+        ]
+    }
+    */
     try {
         const requestedProjectId = req.openapi.pathParams.view;
         const requestedDataIds = req.body;

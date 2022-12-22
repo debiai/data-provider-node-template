@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: DebiAI data provider API
-  version: "0.18.0"
+  version: "0.19.0"
   description: >-
     This API describe what the endpoints a service that want to be a DebiAI data
     provider need to have
@@ -403,6 +403,30 @@ paths:
                       type: number
                       description: Number of samples in the selection
                       default: 0
+    post:
+      x-eov-operation-id: createSelection
+      x-eov-operation-handler: debiai.js
+      description: Create a selection with id List send in body
+      tags:
+        - selections
+      responses:
+        "204":
+          description: "Selection created successfully"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                idList:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - name
+                - idList
   /debiai/view/{view}/selection/{selectionId}/selectedDataIdList:
     parameters:
       - schema:

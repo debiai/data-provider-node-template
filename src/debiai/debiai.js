@@ -38,7 +38,7 @@ exports.dataIdList = (req, res) => {
     // Return the list of the project data ids
     try {
         const requestedProjectId = req.openapi.pathParams.view;
-        
+
         const projectDataIds = [1, 2, 3]
         // The data ids are 1, 2, 3, they will be requested by DebiAI
         // they can be in any format, but please avoid caracters like : / ( ) < > . ; or ,
@@ -46,8 +46,8 @@ exports.dataIdList = (req, res) => {
         // In case of a nulber of sample > 10000, we will ask for a sequensed amount of sample ID
         // Set variables only if from & to in query parameters*
         const from = req.query.from
-        const to = req.query.to  
-    
+        const to = req.query.to
+
         if (from !== undefined && to !== undefined) {
             // Fetch data with from and to filter;
             // Add + 1 because slice function excluded last value
@@ -101,8 +101,10 @@ exports.modelList = (req, res) => {
             },
             {
                 id: "model_2",
-                name: "Model 2",
                 nbResults: 2
+            },
+            {
+                id: "model_3"
             },
         ]
 
@@ -128,6 +130,8 @@ exports.modelEvaluatedDataIdList = (req, res) => {
             res.status(200).send([1, 2])
         else if (requestedModelId == "model_2")
             res.status(200).send([2, 3])
+        else if (requestedModelId == "model_3")
+            res.status(200).send([])
         else
             res.status(404).send("Model not found")
 
@@ -216,8 +220,8 @@ exports.selectionDataIdList = (req, res) => {
 
         let idList = []
         if (requestedSelectionId === "first-selection") {
-            idList = [1, 2] 
-        } 
+            idList = [1, 2]
+        }
         else if (requestedSelectionId === "second-selection") {
             idList = [2, 3]
         }

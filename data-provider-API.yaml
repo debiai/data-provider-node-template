@@ -133,13 +133,13 @@ paths:
         name: view
         description: View name to get the data ID list
         required: true
-      - in : query
+      - in: query
         schema:
           type: integer
         name: from
         description: Starting point to fetch data Ids
         required: false
-      - in : query
+      - in: query
         schema:
           type: integer
         name: to
@@ -463,3 +463,30 @@ paths:
                     - type: string
                     - type: number
                     - type: integer
+  /debiai/view/{view}/selections/{selectionId}:
+    parameters:
+      - schema:
+          type: string
+          minLength: 1
+          example: Project 1
+        name: view
+        in: path
+        description: View name to get the selection to delete
+        required: true
+      - schema:
+          type: string
+          minLength: 1
+          example: Selection 1
+        name: selectionId
+        in: path
+        description: Selection id to be deleted
+        required: true
+    delete:
+      x-eov-operation-id: deleteSelection
+      x-eov-operation-handler: debiai.js
+      description: Delete a single selection
+      tags:
+        - selections
+      responses:
+        "204":
+          description: "Selection successfully deleted"

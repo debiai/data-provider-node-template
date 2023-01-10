@@ -75,12 +75,15 @@ exports.data = (req, res) => {
             3: ["Context c", -2, 0]
         }
 
-        // The object keys are the data ids, the values are the data
-        // The data array follows the columns order defined in the project info
-        // Data containing '', null or undefined aren't supported by DebiAI
-        // Data in a format other than string or number aren't supported by DebiAI
+        // The object keys are the data ids and the object values are the data
+        // The data array MUST follow the columns order defined in the project info
+        // Data containing '', null or undefined aren't supported by DebiAI at the moment
+        // Data in a format other than string or number (array, objects, ...) aren't supported by DebiAI
 
-        res.status(200).send(projectData)
+        const dataToReturn = {}
+        requestedDataIds.forEach(id => { dataToReturn[id] = projectData[id] })
+
+        res.status(200).send(dataToReturn)
 
     } catch (error) {
         console.log(error)
@@ -90,6 +93,14 @@ exports.data = (req, res) => {
 
 exports.modelList = (req, res) => {
     // Return the list of the project models
+    // The models are the models that have been evaluated or trained on the project data
+    /*
+    Response body : [{
+        "id": "string",
+        "name": "string",      // Optional
+        "nbResults": "number"  // Optional
+    }]
+    */
     try {
         const requestedProjectId = req.openapi.pathParams.view;
 
@@ -177,31 +188,47 @@ exports.modelResults = (req, res) => {
 }
 
 // Selections
+const selections = [
+    {
+        "id": "first-selection",
+        "name": "First selection",
+        "nbSamples": 2,
+
+        "dataIds": [1, 2]
+    },
+    {
+        "id": "second-selection",
+        "name": "second selection",
+
+        "dataIds": [2, 3]
+    },
+    {
+        "id": "third-selection",
+
+        "dataIds": [1]
+    }
+]
+
 exports.selectionList = (req, res) => {
     // Return the project selections
+    // A selection is a group of data ids, it can be used to analyse a subset of the data
+    // The route is optional, if not provided, DebiAI won't be able to use selections
     /*
         Response body : [{
             "id": "string",
-            "name": "string",
-            "nbSamples": "number"
+            "name": "string",      // Optional
+            "nbSamples": "number"  // Optional
         }]
     */
     try {
         const requestedProjectId = req.openapi.pathParams.view;
-        const firstSelection = {
-            "id": "first-selection",
-            "name": "First selection",
-            "nbSamples": 2
-        }
-        const secondSelection = {
-            "id": "second-selection",
-            "name": "second selection"
-        }
-        const thirdSelection = {
-            "id": "third-selection"
-        }
 
-        res.status(200).send([firstSelection, secondSelection, thirdSelection])
+        // Send the selections list without the data id list
+        const selectionsToSend = selections.map(selection => {
+            return { "id": selection.id, "name": selection.name, "nbSamples": selection.nbSamples }
+        })
+
+        res.status(200).send(selectionsToSend)
     } catch (error) {
         console.log(error)
         res.status(500).send(error)
@@ -212,22 +239,16 @@ exports.selectionDataIdList = (req, res) => {
     // Return the list of a selection samples ids
     /*
         Response body : 
-        ["id 1", 10, "id 3", "id 4", "39"]
+        ["id 1", "id 2", "id 3", ...]
     */
     try {
         const requestedProjectId = req.openapi.pathParams.view;
         const requestedSelectionId = req.openapi.pathParams.selectionId
 
-        let idList = []
-        if (requestedSelectionId === "first-selection") {
-            idList = [1, 2]
-        }
-        else if (requestedSelectionId === "second-selection") {
-            idList = [2, 3]
-        }
-        else if (requestedSelectionId === "third-selection") {
-            idList = [1]
-        }
+        const selection = selections.find(selection => selection.id == requestedSelectionId)
+        if (!selection) res.status(404).send("Selection not found")
+
+        const idList = selection.dataIds
 
         res.status(200).send(idList)
     } catch (error) {
@@ -236,13 +257,10 @@ exports.selectionDataIdList = (req, res) => {
     }
 }
 
-
-
 exports.createSelection = (req, res) => {
-    // Return no content http response (204)
     /* Create a selection from the idList ids given in request body
     The route is called by DebiAI user Interface
-    Optionnal route 
+    Optionnal route, return no content http response (204)
     If the data provider is not designed to support creation, throw an error
 
     RequestBody: 
@@ -254,10 +272,44 @@ exports.createSelection = (req, res) => {
             "sample-3"
         ]
     }
+
+    Known issue:
+        If your project samples ID are number, you will receive the idList as string,
+        you will have to convert them to number
     */
     try {
         const requestedProjectId = req.openapi.pathParams.view;
-        const requestedDataIds = req.body;
+        const selectionName = req.body.name;
+        const selectionsDataIds = req.body.idList; // Array of data ids
+
+        selections.push({
+            "id": selectionName,
+            "name": selectionName,
+            "nbSamples": selectionsDataIds.length,
+            "dataIds": selectionsDataIds
+        })
+
+        res.status(204).end()
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+}
+
+exports.deleteSelection = (req, res) => {
+    /* Delete a selection
+    The route is called by DebiAI user Interface
+    Optionnal route, return no content http response (204)
+    If the data provider is not designed to support deletion, throw an error
+    */
+    try {
+        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedSelectionId = req.openapi.pathParams.selectionId;
+
+        const selectionIndex = selections.findIndex(selection => selection.id == requestedSelectionId)
+        if (selectionIndex == -1) res.status(404).send("Selection not found")
+
+        selections.splice(selectionIndex, 1)
 
         res.status(204).end()
     } catch (error) {

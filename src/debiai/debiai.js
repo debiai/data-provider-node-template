@@ -260,7 +260,7 @@ exports.selectionDataIdList = (req, res) => {
 exports.createSelection = (req, res) => {
     /* Create a selection from the idList ids given in request body
     The route is called by DebiAI user Interface
-    Optionnal route, neturn no content http response (204)
+    Optionnal route, return no content http response (204)
     If the data provider is not designed to support creation, throw an error
 
     RequestBody: 
@@ -299,7 +299,7 @@ exports.createSelection = (req, res) => {
 exports.deleteSelection = (req, res) => {
     /* Delete a selection
     The route is called by DebiAI user Interface
-    Optionnal route, neturn no content http response (204)
+    Optionnal route, return no content http response (204)
     If the data provider is not designed to support deletion, throw an error
     */
     try {

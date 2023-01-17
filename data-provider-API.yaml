@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: DebiAI data provider API
-  version: "0.19.0"
+  version: "0.20.0"
   description: >-
     This API describe what the endpoints a service that want to be a DebiAI data
     provider need to have
@@ -11,16 +11,19 @@ info:
 servers:
   - url: "http://localhost:3000"
 tags:
-  - name: views
-  - name: data
+  - name: Info
+  - name: projects
+  - name: models
+  - name: selections
 paths:
+  ######  ---------------------- INFO ---------------------- ######
   /debiai/info:
     get:
       x-eov-operation-id: info
       x-eov-operation-handler: debiai.js
       description: Get some general informations about how DebiAI can use this service
       tags:
-        - views
+        - Info
       responses:
         "200":
           description: Projets informations
@@ -28,110 +31,179 @@ paths:
             application/json:
               schema:
                 type: object
-                description: Project views that can be selected by a DebiAI User, each key is a view ID
+                description: Mandatory informations to deal with data provider data requests
+                minProperties: 1
+                properties:
+                  version:
+                    type: string
+                    description: The version number of the data provider
+                  maxSampleIdByRequest:
+                    type: integer
+                    description: Optional number of samples that can be provided by the project for display purpose
+                    default: null
+                  maxSampleDataByRequest:
+                    type: integer
+                  maxResultByRequest:
+                    type: integer
+  ######  ---------------------- PROJECTS ---------------------- ######
+  /debiai/projects:
+    get:
+      x-eov-operation-id: getProjectsOverview
+      x-eov-operation-handler: debiai.js
+      description: Get some general informations about project accessible from this data provider
+      tags:
+        - projects
+      responses:
+        "200":
+          description: Projets informations
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Project that can be selected by a DebiAI User, each key is a project ID
                 minProperties: 1
                 additionalProperties:
                   type: object
-                  description: A view
-                  required:
-                    - columns
-                    - expectedResults
+                  description: A project overview
                   properties:
                     name:
                       type: string
-                      description: View name, the view ID by default
+                      description: Project name, the project ID by default
                       minLength: 1
                       maxLength: 30
-                    columns:
-                      type: array
-                      description: Columns that DebiAI will be expecting for the view data
-                      items:
-                        type: object
-                        properties:
-                          name:
-                            type: string
-                            maxLength: 30
-                            minLength: 1
-                            example: Image name
-                          category:
-                            type: string
-                            description: >-
-                              Category of the column that will be used to select
-                              the column more easely
-                            default: other
-                            enum:
-                              - groundtruth
-                              - input
-                              - context
-                              - other
-                            minLength: 1
-                            maxLength: 30
-                            example: Groundthruth
-                          type:
-                            type: string
-                            enum:
-                              - auto
-                              - text
-                              - number
-                              - boolean
-                            default: auto
-                            description: >-
-                              The type of the column values, it will be guessed by
-                              default by DebiAI, but it can be forced. Forcing a
-                              type can be useful if we want to consider numbers
-                              like 10, 100, 1000 as categories.
-                        required:
-                          - name
-                    expectedResults:
-                      type: array
-                      description: Columns that DebiAI will be expecting for the view model results
-                      items:
-                        type: object
-                        properties:
-                          name:
-                            type: string
-                            maxLength: 30
-                            minLength: 1
-                            example: Image name
-                          category:
-                            type: string
-                            description: >-
-                              Category of the column that will be used to select
-                              the column more easely
-                            default: Other
-                            minLength: 1
-                            maxLength: 30
-                            example: Groundthruth
-                          type:
-                            type: string
-                            enum:
-                              - auto
-                              - text
-                              - number
-                              - boolean
-                            default: auto
-                            description: >-
-                              The type of the column values, it will be guessed by
-                              default by DebiAI, but it can be forced. Forcing a
-                              type can be useful if we want to consider numbers
-                              like 10, 100, 1000 as categories.
-                        required:
-                          - name
+                    id:
+                      type: string
+                      description: Unique Id of the project
                     nbSamples:
                       type: integer
                       description: Optional number of samples that can be provided by the project for display purpose
                       default: null
-
-  # Data
-  /debiai/view/{view}/dataIdList:
+                    nbModels:
+                      type: integer
+                      description: Optional number of samples that can be provided by the project for display purpose
+                      default: null
+                    nbSelections:
+                      type: integer
+                      description: Optional number of samples that can be provided by the project for display purpose
+                      default: null
+  /debiai/projects/{projectId}:
+    parameters:
+        - in: path
+          schema:
+            type: string
+            minLength: 1
+            example: Project 1
+          name: projectId
+          description: Project To research
+          required: true
+    get:
+      x-eov-operation-id: getProject
+      x-eov-operation-handler: debiai.js
+      description: Get Informations about project
+      tags:
+        - projects
+      responses:
+        "200":
+          description: Projets informations
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Structural informations about a project like the collumns and the expected results
+                properties:
+                  name:
+                    type: string
+                    description: Project name, the project ID by default
+                    minLength: 1
+                    maxLength: 30
+                  columns:
+                    type: array
+                    description: Columns that DebiAI will be expecting for the project data
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          maxLength: 30
+                          minLength: 1
+                          example: Image name
+                        category:
+                          type: string
+                          description: >-
+                            Category of the column that will be used to select
+                            the column more easely
+                          default: other
+                          enum:
+                            - groundtruth
+                            - input
+                            - context
+                            - other
+                          minLength: 1
+                          maxLength: 30
+                          example: Groundthruth
+                        type:
+                          type: string
+                          enum:
+                            - auto
+                            - text
+                            - number
+                            - boolean
+                          default: auto
+                          description: >-
+                            The type of the column values, it will be guessed by
+                            default by DebiAI, but it can be forced. Forcing a
+                            type can be useful if we want to consider numbers
+                            like 10, 100, 1000 as categories.
+                      required:
+                        - name
+                  expectedResults:
+                    type: array
+                    description: Columns that DebiAI will be expecting for the project model results
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          maxLength: 30
+                          minLength: 1
+                          example: Image name
+                        category:
+                          type: string
+                          description: >-
+                            Category of the column that will be used to select
+                            the column more easely
+                          default: Other
+                          minLength: 1
+                          maxLength: 30
+                          example: Groundthruth
+                        type:
+                          type: string
+                          enum:
+                            - auto
+                            - text
+                            - number
+                            - boolean
+                          default: auto
+                          description: >-
+                            The type of the column values, it will be guessed by
+                            default by DebiAI, but it can be forced. Forcing a
+                            type can be useful if we want to consider numbers
+                            like 10, 100, 1000 as categories.
+                      required:
+                        - name
+                  nbSamples:
+                    type: integer
+                    description: Optional number of samples that can be provided by the project for display purpose
+                    default: null
+  /debiai/projects/{projectId}/data-id-list:
     parameters:
       - in: path
         schema:
           type: string
           minLength: 1
           example: Project 1
-        name: view
-        description: View name to get the data ID list
+        name: projectId
+        description: Project id to get the data ID list
         required: true
       - in: query
         schema:
@@ -149,8 +221,8 @@ paths:
       x-eov-operation-id: dataIdList
       x-eov-operation-handler: debiai.js
       description: >-
-        Get a ID list of all available data in the view, this endpoint need to
-        work with the view list provided in the info endoint
+        Get a ID list of all available data in the project, this endpoint need to
+        work with the project list provided in the info endoint
 
         A those ID will be used by DebiAI to request data or results later
       tags:
@@ -162,29 +234,22 @@ paths:
             application/json:
               schema:
                 type: array
-                uniqueItems: true
-                description: "The view full list of data ID, each ID must be unique  "
-                items:
-                  anyOf:
-                    - type: string
-                    - type: number
-                    - type: integer
-                  minLength: 1
+                description: "The project full list of data ID, each ID must be unique  "
               examples:
                 example:
                   value:
                     - MyDataId_1
                     - MyDataId_2
                     - ...
-  /debiai/view/{view}/data:
+  /debiai/projects/{projectId}/data:
     parameters:
       - schema:
           type: string
           minLength: 1
           example: Project 1
-        name: view
+        name: projectId
         in: path
-        description: View name to get the data ID list
+        description: project name to get the data ID list
         required: true
     post:
       x-eov-operation-id: data
@@ -199,7 +264,7 @@ paths:
       responses:
         "200":
           description: |
-            The view data for each requested id.
+            The project data for each requested id.
           content:
             application/json:
               schema:
@@ -230,22 +295,21 @@ paths:
                   - type: string
                   - type: number
                   - type: integer
-
-  # Models
-  /debiai/view/{view}/models:
+  ######  ---------------------- MODELS ---------------------- ######
+  /debiai/projects/{projectId}/models:
     parameters:
       - schema:
           type: string
           minLength: 1
           example: Project 1
-        name: view
+        name: projectId
         in: path
-        description: View name to get the model list
+        description: project name to get the model list
         required: true
     get:
       x-eov-operation-id: modelList
       x-eov-operation-handler: debiai.js
-      description: Tell DebiAI which models are available for the given view
+      description: Tell DebiAI which models are available for the given project
       tags:
         - models
       responses:
@@ -270,15 +334,15 @@ paths:
                       type: number
                       description: Number of results that the model can provide
                       default: 0
-  /debiai/view/{view}/model/{modelId}/evaluatedDataIdList:
+  /debiai/projects/{projectId}/models/{modelId}/evaluated-data-id-list:
     parameters:
       - schema:
           type: string
           minLength: 1
           example: Project 1
-        name: view
+        name: projectId
         in: path
-        description: View name to get the data ID list
+        description: project name to get the data ID list
         required: true
       - schema:
           type: string
@@ -291,7 +355,7 @@ paths:
     get:
       x-eov-operation-id: modelEvaluatedDataIdList
       x-eov-operation-handler: debiai.js
-      description: Tell DebiAI which models are available for the given view
+      description: Tell DebiAI which models are available for the given project
       tags:
         - models
       responses:
@@ -306,15 +370,15 @@ paths:
                     - type: string
                     - type: number
                     - type: integer
-  /debiai/view/{view}/model/{modelId}/results:
+  /debiai/projects/{projectId}/models/{modelId}/results:
     parameters:
       - schema:
           type: string
           minLength: 1
           example: Project 1
-        name: view
+        name: projectId
         in: path
-        description: View name to get the data ID list
+        description: project name to get the data ID list
         required: true
       - schema:
           type: string
@@ -363,22 +427,21 @@ paths:
                   - type: string
                   - type: number
                   - type: integer
-
-  # Selections
-  /debiai/view/{view}/selections:
+  ######  ---------------------- SELECTIONS ---------------------- ######
+  /debiai/projects/{projectId}/selections:
     parameters:
       - schema:
           type: string
           minLength: 1
           example: Project 1
-        name: view
+        name: projectId
         in: path
-        description: View name to get the selection list
+        description: project name to get the selection list
         required: true
     get:
       x-eov-operation-id: selectionList
       x-eov-operation-handler: debiai.js
-      description: Tell DebiAI which selections are available for the given view
+      description: Tell DebiAI which selections are available for the given project
       tags:
         - selections
       responses:
@@ -427,15 +490,15 @@ paths:
               required:
                 - name
                 - idList
-  /debiai/view/{view}/selection/{selectionId}/selectedDataIdList:
+  /debiai/projects/{projectId}/selections/{selectionId}/selected-data-id-list:
     parameters:
       - schema:
           type: string
           minLength: 1
           example: Project 1
-        name: view
+        name: projectId
         in: path
-        description: View name to get the data ID list
+        description: project name to get the data ID list
         required: true
       - schema:
           type: string
@@ -463,15 +526,15 @@ paths:
                     - type: string
                     - type: number
                     - type: integer
-  /debiai/view/{view}/selections/{selectionId}:
+  /debiai/projects/{projectId}/selections/{selectionId}:
     parameters:
       - schema:
           type: string
           minLength: 1
           example: Project 1
-        name: view
+        name: projectId
         in: path
-        description: View name to get the selection to delete
+        description: project name to get the selection to delete
         required: true
       - schema:
           type: string

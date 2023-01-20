@@ -12,9 +12,10 @@ servers:
   - url: "http://localhost:3000"
 tags:
   - name: Info
-  - name: projects
-  - name: models
-  - name: selections
+  - name: Projects
+  - name: Data
+  - name: Models
+  - name: Selections
 paths:
   ######  ---------------------- INFO ---------------------- ######
   /debiai/info:
@@ -26,25 +27,29 @@ paths:
         - Info
       responses:
         "200":
-          description: Projets informations
+          description: Success, Return informations about data Provider requests limits
           content:
             application/json:
               schema:
                 type: object
-                description: Mandatory informations to deal with data provider data requests
-                minProperties: 1
+                description: Informations to deal with data provider data requests
                 properties:
                   version:
                     type: string
-                    description: The version number of the data provider
+                    description: The version of the data provider
+                    example: "0.20.0"
                   maxSampleIdByRequest:
                     type: integer
-                    description: Optional number of samples that can be provided by the project for display purpose
-                    default: null
+                    description: Optional number of samples id that can be provided by the project for display purpose
+                    default: 10000
                   maxSampleDataByRequest:
                     type: integer
+                    description: Optional number of samples data that can be provided by the project for display purpose
+                    default: 2000
                   maxResultByRequest:
                     type: integer
+                    description: Optional number of samples results that can be provided by the project for display purpose
+                    default: 5000
   ######  ---------------------- PROJECTS ---------------------- ######
   /debiai/projects:
     get:
@@ -52,7 +57,7 @@ paths:
       x-eov-operation-handler: debiai.js
       description: Get some general informations about project accessible from this data provider
       tags:
-        - projects
+        - Projects
       responses:
         "200":
           description: Projets informations
@@ -61,7 +66,6 @@ paths:
               schema:
                 type: object
                 description: Project that can be selected by a DebiAI User, each key is a project ID
-                minProperties: 1
                 additionalProperties:
                   type: object
                   description: A project overview
@@ -71,20 +75,17 @@ paths:
                       description: Project name, the project ID by default
                       minLength: 1
                       maxLength: 30
-                    id:
-                      type: string
-                      description: Unique Id of the project
                     nbSamples:
                       type: integer
                       description: Optional number of samples that can be provided by the project for display purpose
                       default: null
                     nbModels:
                       type: integer
-                      description: Optional number of samples that can be provided by the project for display purpose
+                      description: Optional number of models that can be provided by the project for display purpose
                       default: null
                     nbSelections:
                       type: integer
-                      description: Optional number of samples that can be provided by the project for display purpose
+                      description: Optional number of selections that can be provided by the project for display purpose
                       default: null
   /debiai/projects/{projectId}:
     parameters:
@@ -101,7 +102,7 @@ paths:
       x-eov-operation-handler: debiai.js
       description: Get Informations about project
       tags:
-        - projects
+        - Projects
       responses:
         "200":
           description: Projets informations
@@ -109,7 +110,7 @@ paths:
             application/json:
               schema:
                 type: object
-                description: Structural informations about a project like the collumns and the expected results
+                description: Structural informations about a project like the columns and the expected results
                 properties:
                   name:
                     type: string
@@ -226,7 +227,7 @@ paths:
 
         A those ID will be used by DebiAI to request data or results later
       tags:
-        - data
+        - Data
       responses:
         "200":
           description: ""
@@ -249,7 +250,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the data ID list
+        description: project id to get the data ID list
         required: true
     post:
       x-eov-operation-id: data
@@ -260,7 +261,7 @@ paths:
         number of data asked won't exceed the "dataUploadPatchSize" if it was
         specified in the debiai/info endpoint
       tags:
-        - data
+        - Data
       responses:
         "200":
           description: |
@@ -304,14 +305,14 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the model list
+        description: project id to get the model list
         required: true
     get:
       x-eov-operation-id: modelList
       x-eov-operation-handler: debiai.js
       description: Tell DebiAI which models are available for the given project
       tags:
-        - models
+        - Models
       responses:
         "200":
           description: A model list
@@ -342,7 +343,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the data ID list
+        description: project id to get the data ID list
         required: true
       - schema:
           type: string
@@ -357,7 +358,7 @@ paths:
       x-eov-operation-handler: debiai.js
       description: Tell DebiAI which models are available for the given project
       tags:
-        - models
+        - Models
       responses:
         "200":
           description: The model data id list that the model has been evaluated on
@@ -393,7 +394,7 @@ paths:
       x-eov-operation-handler: debiai.js
       description: Gives the results of a model from a given data ID list
       tags:
-        - models
+        - Models
       responses:
         "200":
           description: The model results for each requested data ID
@@ -443,7 +444,7 @@ paths:
       x-eov-operation-handler: debiai.js
       description: Tell DebiAI which selections are available for the given project
       tags:
-        - selections
+        - Selections
       responses:
         "200":
           description: A selection list
@@ -471,7 +472,7 @@ paths:
       x-eov-operation-handler: debiai.js
       description: Create a selection with id List send in body
       tags:
-        - selections
+        - Selections
       responses:
         "204":
           description: "Selection created successfully"
@@ -513,7 +514,7 @@ paths:
       x-eov-operation-handler: debiai.js
       description: Tell DebiAI the samples selected by the a selection
       tags:
-        - selections
+        - Selections
       responses:
         "200":
           description: The selection data id list
@@ -549,7 +550,7 @@ paths:
       x-eov-operation-handler: debiai.js
       description: Delete a single selection
       tags:
-        - selections
+        - Selections
       responses:
         "204":
           description: "Selection successfully deleted"

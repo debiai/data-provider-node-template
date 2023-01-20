@@ -6,6 +6,8 @@ exports.info = (req, res) => {
     try {
         const version = pjson.version;
         /*
+            Adjust those values depending on your data-provider capacity
+
             - maxSampleIdByRequest : The maximum sample Ids to request at the same time
             - maxSampleDataByRequest : The maximum sample of data to request for a project
             - maxResultByRequest : The maximum results from a model to request 
@@ -68,11 +70,11 @@ exports.getProject = async (req, res) => {
 
         const project = {};
 
-        // To set name, collumns and expected results to the variable we send to Debiai
+        // To set name, columns and expected results to the variable we send to Debiai
         if (projectId == "project_1") {
             project[projectId] = projectValue;
         } else {
-            res.status(404).send("Can't find project " + requestedProjectId)
+            res.status(404).send("Can't find project " + projectId)
         }
 
         res.status(200).send(project);
@@ -96,7 +98,7 @@ exports.dataIdList = (req, res) => {
         // The data ids are 1, 2, 3, they will be requested by DebiAI
         // they can be in any format, but please avoid caracters like : / ( ) < > . ; or ,
 
-        // In case of a number of sample > 10000, we will ask for a sequensed amount of sample ID
+        // In case of a number of sample > maxSampleIdByRequest, we will ask for a sequensed amount of sample ID
         // Set variables only if from & to in query parameters*
         const from = req.query.from
         const to = req.query.to
@@ -321,7 +323,10 @@ exports.selectionDataIdList = (req, res) => {
             res.status(404).send("Can't find project " + requestedProjectId)
 
         const selection = selections.find(selection => selection.id == requestedSelectionId)
-        if (!selection) res.status(404).send("Selection not found")
+        if (!selection) { 
+            res.status(404).send("Selection not found")
+            return
+        }
 
         const idList = selection.dataIds
 

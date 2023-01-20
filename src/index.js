@@ -11,7 +11,7 @@ const config = require("./config.js").default
 // Create server
 const app = express();
 const server = new Server(app);
-const DEBIAI_OPERATION_HANDLERS_PATH = "debiai/"
+const DEBIAI_OPERATION_HANDLERS_PATH = "debiai"
 
 // Set up CORS
 const corsConfig = { origin: true, credentials: true };

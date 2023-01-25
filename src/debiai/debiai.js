@@ -68,17 +68,13 @@ exports.getProject = async (req, res) => {
             nbSamples: 10,
         }
 
-        const project = {};
 
         // To set name, columns and expected results to the variable we send to Debiai
         if (projectId == "project_1") {
-            project[projectId] = projectValue;
+            res.status(200).send(projectValue);
         } else {
             res.status(404).send("Can't find project " + projectId)
         }
-
-        res.status(200).send(project);
-
     } catch (error) {
         console.log(error);
         res.status(500).send(error);        

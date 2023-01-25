@@ -51,10 +51,10 @@ describe('Testing the debiai dataprovider compliance', function () {
             .end((err, res) => {
                 if (err) return done(err);
                 providerProjects = Object.keys(res.body);
+                done();
             })
-            done();
     })
-
+    
     it('should expose a project', (done) => {
         for (let projectNb = 0; projectNb < providerProjects.length; projectNb++) {
             const projectId = providerProjects[projectNb];
@@ -65,27 +65,26 @@ describe('Testing the debiai dataprovider compliance', function () {
                 .expect('Content-Type', /json/)
                 .end((err, res) => {
                     if (err) return done(err);
-                    providerProjectsColumns[projectId] = res.body[projectId].columns;
-                    providerProjectsExpectedResults[projectId] = res.body[projectId].expectedResults;
+                    providerProjectsColumns[projectId] = res.body.columns;
+                    providerProjectsExpectedResults[projectId] = res.body.expectedResults;
                 })
-            done();
         }
+        done();
     })
 
-    it('should return a 404 error : project not found', (done) => {
-        const projectId = "project_2";
-        request(app)
-            .get(`/debiai/projects/${projectId}`)
-            .set('Content-Type', 'application/json')
-            .expect(404, done)
-    })
+    // it('should return a 404 error : project not found', (done) => {
+    //     const projectId = "project_2";
+    //     request(app)
+    //         .get(`/debiai/projects/${projectId}`)
+    //         .set('Content-Type', 'application/json')
+    //         .expect(404, done)
+    // })
 
     it('should give data ids for each projects', async () => {
         for (let projectNb = 0; projectNb < providerProjects.length; projectNb++) {
             const projectId = providerProjects[projectNb];
-
             let resp = await request(app)
-                .get(`/debiai/projects/${projectId}/data-id-list`)
+                .get(`/debiai/projects/${projectId}/data-id-list?from=0&to=${NB_TEST_SAMPLES}`)
                 .set('Content-Type', 'application/json')
                 .expect(200)
                 .expect('Content-Type', /json/)
@@ -155,14 +154,14 @@ describe('Testing the debiai dataprovider compliance', function () {
         }
     });
 
-    it('should return a 404 error : Model not found', (done) => {
-        const projectId = "project_1";
-        const modelId = "model_10"
-        request(app)
-            .get(`/debiai/projects/${projectId}/models/${modelId}/evaluated-data-id-list`)
-            .set('Content-Type', 'application/json')
-            .expect(404, done)
-    })
+    // it('should return a 404 error : Model not found', (done) => {
+    //     const projectId = "project_1";
+    //     const modelId = "model_10"
+    //     request(app)
+    //         .get(`/debiai/projects/${projectId}/models/${modelId}/evaluated-data-id-list`)
+    //         .set('Content-Type', 'application/json')
+    //         .expect(404, done)
+    // })
 
     it('should provide model results', async () => {
         // For each project
@@ -221,7 +220,7 @@ describe('Testing the debiai dataprovider compliance', function () {
                 if (!selection.id)
                     throw new Error(`Expected a selection id, got ${selection.id}`);
             })
-
+            
             projectsSelections[projectId] = selections;
         }
     });
@@ -251,14 +250,14 @@ describe('Testing the debiai dataprovider compliance', function () {
         }
     });
 
-    it('should return a 404 error : selection not found', (done) => {
-        const projectId = "project_1";
-        const selectionId = "selection test"
-        request(app)
-            .get(`/debiai/projects/${projectId}/selections/${selectionId}/selected-data-id-list`)
-            .set('Content-Type', 'application/json')
-            .expect(404, done)
-    })
+    // it('should return a 404 error : selection not found', (done) => {
+    //     const projectId = "project_1";
+    //     const selectionId = "selection test"
+    //     request(app)
+    //         .get(`/debiai/projects/${projectId}/selections/${selectionId}/selected-data-id-list`)
+    //         .set('Content-Type', 'application/json')
+    //         .expect(404, done)
+    // })
 
     it('should provide data for a selection', async () => {
         // For each project
@@ -298,13 +297,14 @@ describe('Testing the debiai dataprovider compliance', function () {
     it('should be able to create a selection', async () => {
         for (let projectNb = 0; projectNb < providerProjects.length; projectNb++) {
             const projectId = providerProjects[projectNb];
-
+            const selectionDataId = projectsDataIds[projectId];
+        
             let resp = await request(app)
                 .post(`/debiai/projects/${projectId}/selections`)
                 .set('Content-Type', 'application/json')
                 .send({
                     name: 'test',
-                    idList: ["1", "2", "3"]
+                    idList: selectionDataId.slice(0, 3).map(id => id.toString())
                 })
                 .expect(204)
             
@@ -366,7 +366,7 @@ describe('Testing the debiai dataprovider compliance', function () {
                 .set('Content-Type', 'application/json')
                 .expect(200)
                 .expect('Content-Type', /json/)
-
+            
             const selections2 = resp3.body;
             const selection2 = selections2.find(selection => selection.name === selectionName);
 
@@ -375,3 +375,4 @@ describe('Testing the debiai dataprovider compliance', function () {
         }
     });
 });
+

@@ -77,9 +77,9 @@ exports.getProject = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send(error);        
+        res.status(500).send(error);
     }
-    
+
 }
 
 exports.dataIdList = (req, res) => {
@@ -319,7 +319,7 @@ exports.selectionDataIdList = (req, res) => {
             res.status(404).send("Can't find project " + requestedProjectId)
 
         const selection = selections.find(selection => selection.id == requestedSelectionId)
-        if (!selection) { 
+        if (!selection) {
             res.status(404).send("Selection not found")
             return
         }

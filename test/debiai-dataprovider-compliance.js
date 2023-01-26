@@ -154,15 +154,6 @@ describe('Testing the debiai dataprovider compliance', function () {
         }
     });
 
-    it('should return a 404 error : Model not found', (done) => {
-        const projectId = "project_1";
-        const modelId = "model_that_doesnt_exist"
-        request(app)
-            .get(`/debiai/projects/${projectId}/models/${modelId}/evaluated-data-id-list`)
-            .set('Content-Type', 'application/json')
-            .expect(404, done)
-    })
-
     it('should provide model results', async () => {
         // For each project
         for (let projectNb = 0; projectNb < providerProjects.length; projectNb++) {

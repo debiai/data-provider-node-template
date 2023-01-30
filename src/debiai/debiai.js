@@ -1,31 +1,42 @@
-
+const pjson = require("./../../package.json")
 // To have a fonctionnal data-provider, you will need to provide the following functions:
 
-exports.info = (req, res) => {
-    // Return the list of projects with their columns and results
 
+exports.info = (req, res) => {
+    try {
+        const version = pjson.version;
+        /*
+            Adjust those values depending on your data-provider capacity
+
+            - maxSampleIdByRequest : The maximum sample Ids to request at the same time
+            - maxSampleDataByRequest : The maximum sample of data to request for a project
+            - maxResultByRequest : The maximum results from a model to request 
+        */
+        const infoResponse = {
+            version: version,
+            maxSampleIdByRequest: 10000,
+            maxSampleDataByRequest: 2000,
+            maxResultByRequest: 5000
+        }
+
+        res.status(200).send(infoResponse);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+
+
+exports.getProjectsOverview = async (req, res) => {
+    // Return the list of projects with their names and values their numbers of samples, selections and models 
     try {
         const projects = {
             project_1: {
                 name: "Project 1",
-                columns: [
-                    { name: "Context 1", type: "text" },
-                    { name: "Ground thruth 1", type: "number" },
-                    { name: "Input 1", type: "number" },
-                ],
-                expectedResults: [
-                    { name: "Model prediction", type: "number" },
-                    { name: "Model error", type: "number" },
-                ],
-                nbSamples: 3,
+                nbSamples: 10,
+                nbSelections: 2,
+                nbModels: 1,
             }
         }
-
-        // 'project_1' is the project id, it will be used as a path parameter in the API
-        // 'name' is the name of the project
-        // 'columns' is the list of columns of the project data
-        // 'expectedResults' is the list of columns of the model results, it can be empty
-        // 'nbSamples' [optional] is the number of samples in the project data
 
         res.status(200).send(projects)
     } catch (error) {
@@ -34,16 +45,56 @@ exports.info = (req, res) => {
     }
 }
 
+
+exports.getProject = async (req, res) => {
+    try {
+        /*
+            Return a single project with his columns and results 
+        */
+        const projectId = req.openapi.pathParams.projectId;
+
+        //Project value will be the collums and expected results for the project
+        const projectValue = {
+            name: "Project 1",
+            columns: [
+                { name: "Context 1", type: "text" },
+                { name: "Ground thruth 1", type: "number" },
+                { name: "Input 1", type: "number" },
+            ],
+            expectedResults: [
+                { name: "Model prediction", type: "number" },
+                { name: "Model error", type: "number" },
+            ],
+            nbSamples: 10,
+        }
+
+
+        // To set name, columns and expected results to the variable we send to Debiai
+        if (projectId == "project_1") {
+            res.status(200).send(projectValue);
+        } else {
+            res.status(404).send("Can't find project " + projectId)
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+
+}
+
 exports.dataIdList = (req, res) => {
     // Return the list of the project data ids
     try {
-        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedProjectId = req.openapi.pathParams.projectId;
+
+        if (requestedProjectId !== "project_1")
+            res.status(404).send("Can't find project " + requestedProjectId)
 
         const projectDataIds = [1, 2, 3]
         // The data ids are 1, 2, 3, they will be requested by DebiAI
         // they can be in any format, but please avoid caracters like : / ( ) < > . ; or ,
 
-        // In case of a nulber of sample > 10000, we will ask for a sequensed amount of sample ID
+        // In case of a number of sample > maxSampleIdByRequest, we will ask for a sequensed amount of sample ID
         // Set variables only if from & to in query parameters*
         const from = req.query.from
         const to = req.query.to
@@ -65,8 +116,12 @@ exports.dataIdList = (req, res) => {
 exports.data = (req, res) => {
     // Return the data for the given data ids
     try {
-        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedProjectId = req.openapi.pathParams.projectId;
         const requestedDataIds = req.body; // List of data ids requested by DebiAI
+
+        if (requestedProjectId !== "project_1")
+            res.status(404).send("Can't find project " + requestedProjectId)
+
 
         // If the requested ids are [1, 2, 3], the following data will be returned:
         const projectData = {
@@ -102,7 +157,11 @@ exports.modelList = (req, res) => {
     }]
     */
     try {
-        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedProjectId = req.openapi.pathParams.projectId;
+
+        if (requestedProjectId !== "project_1")
+            res.status(404).send("Can't find project " + requestedProjectId)
+
 
         const projectModels = [
             {
@@ -134,8 +193,12 @@ exports.modelList = (req, res) => {
 exports.modelEvaluatedDataIdList = (req, res) => {
     // Return a list of data ids that the model have been evaluated on
     try {
-        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedProjectId = req.openapi.pathParams.projectId;
         const requestedModelId = req.openapi.pathParams.modelId;
+
+        if (requestedProjectId !== "project_1")
+            res.status(404).send("Can't find project " + requestedProjectId)
+
 
         if (requestedModelId == "model_1")
             res.status(200).send([1, 2])
@@ -159,9 +222,12 @@ exports.modelEvaluatedDataIdList = (req, res) => {
 exports.modelResults = (req, res) => {
     // Return the model results for the given data ids
     try {
-        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedProjectId = req.openapi.pathParams.projectId;
         const requestedModelId = req.openapi.pathParams.modelId;
         const requestedDataIds = req.body;
+
+        if (requestedProjectId !== "project_1")
+            res.status(404).send("Can't find project " + requestedProjectId)
 
         const model1Results = {
             1: [9, -2],
@@ -221,7 +287,11 @@ exports.selectionList = (req, res) => {
         }]
     */
     try {
-        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedProjectId = req.openapi.pathParams.projectId;
+
+        if (requestedProjectId !== "project_1")
+            res.status(404).send("Can't find project " + requestedProjectId)
+
 
         // Send the selections list without the data id list
         const selectionsToSend = selections.map(selection => {
@@ -242,11 +312,17 @@ exports.selectionDataIdList = (req, res) => {
         ["id 1", "id 2", "id 3", ...]
     */
     try {
-        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedProjectId = req.openapi.pathParams.projectId;
         const requestedSelectionId = req.openapi.pathParams.selectionId
 
+        if (requestedProjectId !== "project_1")
+            res.status(404).send("Can't find project " + requestedProjectId)
+
         const selection = selections.find(selection => selection.id == requestedSelectionId)
-        if (!selection) res.status(404).send("Selection not found")
+        if (!selection) {
+            res.status(404).send("Selection not found")
+            return
+        }
 
         const idList = selection.dataIds
 
@@ -278,9 +354,13 @@ exports.createSelection = (req, res) => {
         you will have to convert them to number
     */
     try {
-        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedProjectId = req.openapi.pathParams.projectId;
         const selectionName = req.body.name;
         const selectionsDataIds = req.body.idList; // Array of data ids
+
+        if (requestedProjectId !== "project_1")
+            res.status(404).send("Can't find project " + requestedProjectId)
+
 
         selections.push({
             "id": selectionName,
@@ -303,8 +383,12 @@ exports.deleteSelection = (req, res) => {
     If the data provider is not designed to support deletion, throw an error
     */
     try {
-        const requestedProjectId = req.openapi.pathParams.view;
+        const requestedProjectId = req.openapi.pathParams.projectId;
         const requestedSelectionId = req.openapi.pathParams.selectionId;
+
+        if (requestedProjectId !== "project_1")
+            res.status(404).send("Can't find project " + requestedProjectId)
+
 
         const selectionIndex = selections.findIndex(selection => selection.id == requestedSelectionId)
         if (selectionIndex == -1) res.status(404).send("Selection not found")

@@ -89,14 +89,14 @@ paths:
                       default: null
   /debiai/projects/{projectId}:
     parameters:
-        - in: path
-          schema:
-            type: string
-            minLength: 1
-            example: Project 1
-          name: projectId
-          description: Project To research
-          required: true
+      - in: path
+        schema:
+          type: string
+          minLength: 1
+          example: Project 1
+        name: projectId
+        description: Project To research
+        required: true
     get:
       x-eov-operation-id: getProject
       x-eov-operation-handler: debiai.js
@@ -115,8 +115,7 @@ paths:
                   name:
                     type: string
                     description: Project name, the project ID by default
-                    minLength: 1
-                    maxLength: 30
+                    nullable: true
                   columns:
                     type: array
                     description: Columns that DebiAI will be expecting for the project data
@@ -125,7 +124,6 @@ paths:
                       properties:
                         name:
                           type: string
-                          maxLength: 30
                           minLength: 1
                           example: Image name
                         category:
@@ -135,12 +133,11 @@ paths:
                             the column more easely
                           default: other
                           enum:
-                            - groundtruth
-                            - input
-                            - context
                             - other
+                            - context
+                            - input
+                            - groundtruth
                           minLength: 1
-                          maxLength: 30
                           example: Groundthruth
                         type:
                           type: string
@@ -165,18 +162,8 @@ paths:
                       properties:
                         name:
                           type: string
-                          maxLength: 30
                           minLength: 1
-                          example: Image name
-                        category:
-                          type: string
-                          description: >-
-                            Category of the column that will be used to select
-                            the column more easely
-                          default: Other
-                          minLength: 1
-                          maxLength: 30
-                          example: Groundthruth
+                          example: Model prediction
                         type:
                           type: string
                           enum:
@@ -185,11 +172,6 @@ paths:
                             - number
                             - boolean
                           default: auto
-                          description: >-
-                            The type of the column values, it will be guessed by
-                            default by DebiAI, but it can be forced. Forcing a
-                            type can be useful if we want to consider numbers
-                            like 10, 100, 1000 as categories.
                       required:
                         - name
                   nbSamples:

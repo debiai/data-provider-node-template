@@ -58,7 +58,7 @@ exports.getProject = async (req, res) => {
         { name: "Context 1", category: "context", type: "text" },
         { name: "Ground thruth 1", category: "groundtruth", type: "number" },
         { name: "Input 1", category: "input" }, // type is not required, it will be detected automatically
-        { name: "Input 2"  }, // type is not required, it will be detected automatically
+        { name: "Other col"  }, // Category is not required, it will be set to "other" by default
 
         // category can be : context, groundtruth, input, other. Default category is other
         // Type can be : auto, text, number, and boolean. Default type is auto
@@ -123,9 +123,9 @@ exports.data = (req, res) => {
 
     // If the requested ids are [1, 2, 3], the following data will be returned:
     const projectData = {
-      1: ["Context a", 11, 4],
-      2: ["Context b", 23, 2],
-      3: ["Context c", -2, 0],
+      1: ["Context a", 11, 4, false],
+      2: ["Context b", 23, 2, true],
+      3: ["Context c", -2, 0, true],
     };
 
     // The object keys are the data ids and the object values are the data

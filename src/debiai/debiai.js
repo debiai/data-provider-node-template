@@ -50,13 +50,18 @@ exports.getProject = async (req, res) => {
     */
     const projectId = req.openapi.pathParams.projectId;
 
-    //Project value will be the collums and expected results for the project
+    // Project value will be the collums and expected results for the project
     const projectValue = {
       name: "Project 1",
       columns: [
-        { name: "Context 1", type: "text" },
-        { name: "Ground thruth 1", type: "number" },
-        { name: "Input 1", type: "number" },
+        // No need to add the "id" column, it will be added automatically
+        { name: "Context 1", category: "context", type: "text" },
+        { name: "Ground thruth 1", category: "groundtruth", type: "number" },
+        { name: "Input 1", category: "input" }, // type is not required, it will be detected automatically
+        { name: "Other col"  }, // Category is not required, it will be set to "other" by default
+
+        // category can be : context, groundtruth, input, other. Default category is other
+        // Type can be : auto, text, number, and boolean. Default type is auto
       ],
       expectedResults: [
         { name: "Model prediction", type: "number" },
@@ -118,9 +123,9 @@ exports.data = (req, res) => {
 
     // If the requested ids are [1, 2, 3], the following data will be returned:
     const projectData = {
-      1: ["Context a", 11, 4],
-      2: ["Context b", 23, 2],
-      3: ["Context c", -2, 0],
+      1: ["Context a", 11, 4, false],
+      2: ["Context b", 23, 2, true],
+      3: ["Context c", -2, 0, true],
     };
 
     // The object keys are the data ids and the object values are the data

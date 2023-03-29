@@ -1,6 +1,6 @@
 {
   "name": "debiai-data-provider",
-  "version": "0.20.0",
+  "version": "0.21.6",
   "description": "DebiAi data-provider NodeJs template",
   "author": "Tom Mansion",
   "main": "index.js",

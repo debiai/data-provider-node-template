@@ -205,19 +205,19 @@ paths:
           type: string
         name: analysisId
         description: Analysis ID unique identifier, it will be the same for all requests of an analysis
-        required: true
+        required: false
       - in: query
         schema:
           type: boolean
         name: analysisStart
         description: True if it's the first request of an analysis
-        required: true
+        required: false
       - in: query
         schema:
           type: boolean
         name: analysisEnd
         description: True if it's the last request of an analysis
-        required: true
+        required: false
 
     get:
       x-eov-operation-id: dataIdList
@@ -258,19 +258,19 @@ paths:
           type: string
         name: analysisId
         description: Analysis ID unique identifier, it will be the same for all requests of an analysis
-        required: true
+        required: false
       - in: query
         schema:
           type: boolean
         name: analysisStart
         description: True if it's the first request of an analysis
-        required: true
+        required: false
       - in: query
         schema:
           type: boolean
         name: analysisEnd
         description: True if it's the last request of an analysis
-        required: true
+        required: false
     post:
       x-eov-operation-id: data
       x-eov-operation-handler: debiai.js

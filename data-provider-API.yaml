@@ -200,6 +200,25 @@ paths:
         name: to
         description: Ending point to fetch data Ids
         required: false
+      - in: query
+        schema:
+          type: string
+        name: analysisId
+        description: Analysis ID unique identifier, it will be the same for all requests of an analysis
+        required: true
+      - in: query
+        schema:
+          type: boolean
+        name: analysisStart
+        description: True if it's the first request of an analysis
+        required: true
+      - in: query
+        schema:
+          type: boolean
+        name: analysisEnd
+        description: True if it's the last request of an analysis
+        required: true
+
     get:
       x-eov-operation-id: dataIdList
       x-eov-operation-handler: debiai.js
@@ -233,6 +252,24 @@ paths:
         name: projectId
         in: path
         description: project id to get the data ID list
+        required: true
+      - in: query
+        schema:
+          type: string
+        name: analysisId
+        description: Analysis ID unique identifier, it will be the same for all requests of an analysis
+        required: true
+      - in: query
+        schema:
+          type: boolean
+        name: analysisStart
+        description: True if it's the first request of an analysis
+        required: true
+      - in: query
+        schema:
+          type: boolean
+        name: analysisEnd
+        description: True if it's the last request of an analysis
         required: true
     post:
       x-eov-operation-id: data

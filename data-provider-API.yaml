@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: DebiAI data provider API
-  version: "0.21.6"
+  version: "0.22.0"
   description: >-
     This API describe what the endpoints a service that want to be a DebiAI data
     provider need to have
@@ -200,6 +200,25 @@ paths:
         name: to
         description: Ending point to fetch data Ids
         required: false
+      - in: query
+        schema:
+          type: string
+        name: analysisId
+        description: Analysis ID unique identifier, it will be the same for all requests of an analysis
+        required: false
+      - in: query
+        schema:
+          type: boolean
+        name: analysisStart
+        description: True if it's the first request of an analysis
+        required: false
+      - in: query
+        schema:
+          type: boolean
+        name: analysisEnd
+        description: True if it's the last request of an analysis
+        required: false
+
     get:
       x-eov-operation-id: dataIdList
       x-eov-operation-handler: debiai.js
@@ -234,6 +253,24 @@ paths:
         in: path
         description: project id to get the data ID list
         required: true
+      - in: query
+        schema:
+          type: string
+        name: analysisId
+        description: Analysis ID unique identifier, it will be the same for all requests of an analysis
+        required: false
+      - in: query
+        schema:
+          type: boolean
+        name: analysisStart
+        description: True if it's the first request of an analysis
+        required: false
+      - in: query
+        schema:
+          type: boolean
+        name: analysisEnd
+        description: True if it's the last request of an analysis
+        required: false
     post:
       x-eov-operation-id: data
       x-eov-operation-handler: debiai.js

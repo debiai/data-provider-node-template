@@ -236,6 +236,11 @@ paths:
             application/json:
               schema:
                 type: array
+                items:
+                  anyOf:
+                    - type: string
+                    - type: number
+
                 description: "The project full list of data ID, each ID must be unique  "
               examples:
                 example:

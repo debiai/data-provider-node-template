@@ -6,8 +6,8 @@ info:
     This API describe what the endpoints a service that want to be a DebiAI data
     provider need to have
   contact:
-    name: Tom Mansion
-    email: tom.mansion@irt-systemx.fr
+    name: DebiAI Team
+    email: debiai@irt-systemx.fr
 servers:
   - url: "http://localhost:3000"
 tags:

@@ -114,7 +114,7 @@ exports.deleteModel = (req, res) => {
   // Delete the model
   // This route will be called when the user click on the delete model button in the project page
   // If the data provider is not designed to support deletion, throw an error
-  // To prevent deletion, you can set the "canDelete.models" to false in the debiai/info route 
+  // To prevent deletion, you can set the "canDelete.models" to false in the debiai/info route
   const requestedProjectId = req.openapi.pathParams.projectId;
   const requestedModelId = req.openapi.pathParams.modelId;
 

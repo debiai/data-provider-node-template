@@ -145,7 +145,7 @@ exports.deleteSelection = (req, res) => {
   // Delete a selection
   // The route is called by DebiAI when a user click on the delete selection button
   // If the data provider is not designed to support deletion, throw an error
-  // To prevent deletion, you can set the "canDelete.selections" to false in the debiai/info route 
+  // To prevent deletion, you can set the "canDelete.selections" to false in the debiai/info route
 
   try {
     const requestedProjectId = req.openapi.pathParams.projectId;

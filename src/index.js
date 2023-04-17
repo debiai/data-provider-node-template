@@ -11,7 +11,6 @@ const config = require("./config.js").default;
 // Create server
 const app = express();
 const server = new Server(app);
-const DEBIAI_OPERATION_HANDLERS_PATH = "debiai";
 
 // Increase request size limit
 app.use(express.json({ limit: "50mb" }));
@@ -31,7 +30,7 @@ app.use(
     apiSpec: DEBIAI_API_PATH,
     validateRequests: true,
     validateResponses: true,
-    operationHandlers: path.join(__dirname, DEBIAI_OPERATION_HANDLERS_PATH),
+    operationHandlers: path.join(__dirname),
   })
 );
 

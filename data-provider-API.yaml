@@ -9,7 +9,7 @@ info:
     name: DebiAI Team
     email: debiai@irt-systemx.fr
 servers:
-  - url: "http://localhost:3010"
+  - url: http://localhost:3010
 tags:
   - name: Info
   - name: Projects

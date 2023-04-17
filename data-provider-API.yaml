@@ -50,6 +50,23 @@ paths:
                     type: integer
                     description: Optional number of samples results that can be provided by the project for display purpose
                     default: 5000
+
+                  canDelete:
+                    type: object
+                    description: Informations about what can be deleted by DebiAI
+                    properties:
+                      projects:
+                        type: boolean
+                        description: Can DebiAI delete projects
+                        default: true
+                      selections:
+                        type: boolean
+                        description: Can DebiAI delete selections
+                        default: true
+                      models:
+                        type: boolean
+                        description: Can DebiAI delete models
+                        default: true
   ######  ---------------------- PROJECTS ---------------------- ######
   /debiai/projects:
     get:

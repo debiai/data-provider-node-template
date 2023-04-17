@@ -74,19 +74,23 @@ paths:
                       type: string
                       description: Project name, the project ID by default
                       minLength: 1
-                      maxLength: 30
+                      maxLength: 50
+                      nullable: true
                     nbSamples:
                       type: integer
                       description: Optional number of samples that can be provided by the project for display purpose
                       default: null
+                      nullable: true
                     nbModels:
                       type: integer
                       description: Optional number of models that can be provided by the project for display purpose
                       default: null
+                      nullable: true
                     nbSelections:
                       type: integer
                       description: Optional number of selections that can be provided by the project for display purpose
                       default: null
+                      nullable: true
   /debiai/projects/{projectId}:
     parameters:
       - in: path
@@ -178,6 +182,7 @@ paths:
                     type: integer
                     description: Optional number of samples that can be provided by the project for display purpose
                     default: null
+                    nullable: true
     delete:
       x-eov-operation-id: deleteProject
       x-eov-operation-handler: debiai/projects.js
@@ -195,7 +200,7 @@ paths:
           minLength: 1
           example: Project 1
         name: projectId
-        description: Project id to get the data ID list
+        description: Project id
         required: true
       - in: query
         schema:
@@ -264,7 +269,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project id to get the data ID list
+        description: project id
         required: true
       - in: query
         schema:
@@ -375,7 +380,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project id to get the data ID list
+        description: project id
         required: true
       - schema:
           type: string
@@ -383,7 +388,7 @@ paths:
           example: Model 1
         name: modelId
         in: path
-        description: Model id to get the data ID list
+        description: Model id
         required: true
     get:
       x-eov-operation-id: modelEvaluatedDataIdList
@@ -411,7 +416,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the data ID list
+        description: project id
         required: true
       - schema:
           type: string
@@ -419,7 +424,7 @@ paths:
           example: Model 1
         name: modelId
         in: path
-        description: Model id to get the data ID list
+        description: Model id
         required: true
     post:
       x-eov-operation-id: modelResults
@@ -468,7 +473,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the data ID list
+        description: project id
         required: true
       - schema:
           type: string
@@ -476,7 +481,7 @@ paths:
           example: Model 1
         name: modelId
         in: path
-        description: Model id to get the data ID list
+        description: Model id
         required: true
     delete:
       x-eov-operation-id: deleteModel
@@ -496,7 +501,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the selection list
+        description: project id to get the selection list
         required: true
     get:
       x-eov-operation-id: selectionList
@@ -558,7 +563,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the data ID list
+        description: project id
         required: true
       - schema:
           type: string
@@ -594,7 +599,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the selection to delete
+        description: project id to get the selection to delete
         required: true
       - schema:
           type: string

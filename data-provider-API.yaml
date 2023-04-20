@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: DebiAI data provider API
-  version: "0.22.0"
+  version: 0.22.1
   description: >-
     This API describe what the endpoints a service that want to be a DebiAI data
     provider need to have
@@ -9,7 +9,7 @@ info:
     name: DebiAI Team
     email: debiai@irt-systemx.fr
 servers:
-  - url: "http://localhost:3000"
+  - url: http://localhost:3010
 tags:
   - name: Info
   - name: Projects
@@ -21,7 +21,7 @@ paths:
   /debiai/info:
     get:
       x-eov-operation-id: info
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/info.js
       description: Get some general informations about how DebiAI can use this service
       tags:
         - Info
@@ -50,11 +50,28 @@ paths:
                     type: integer
                     description: Optional number of samples results that can be provided by the project for display purpose
                     default: 5000
+
+                  canDelete:
+                    type: object
+                    description: Informations about what can be deleted by DebiAI
+                    properties:
+                      projects:
+                        type: boolean
+                        description: Can DebiAI delete projects
+                        default: true
+                      selections:
+                        type: boolean
+                        description: Can DebiAI delete selections
+                        default: true
+                      models:
+                        type: boolean
+                        description: Can DebiAI delete models
+                        default: true
   ######  ---------------------- PROJECTS ---------------------- ######
   /debiai/projects:
     get:
       x-eov-operation-id: getProjectsOverview
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/projects.js
       description: Get some general informations about project accessible from this data provider
       tags:
         - Projects
@@ -74,19 +91,23 @@ paths:
                       type: string
                       description: Project name, the project ID by default
                       minLength: 1
-                      maxLength: 30
+                      maxLength: 50
+                      nullable: true
                     nbSamples:
                       type: integer
                       description: Optional number of samples that can be provided by the project for display purpose
                       default: null
+                      nullable: true
                     nbModels:
                       type: integer
                       description: Optional number of models that can be provided by the project for display purpose
                       default: null
+                      nullable: true
                     nbSelections:
                       type: integer
                       description: Optional number of selections that can be provided by the project for display purpose
                       default: null
+                      nullable: true
   /debiai/projects/{projectId}:
     parameters:
       - in: path
@@ -99,7 +120,7 @@ paths:
         required: true
     get:
       x-eov-operation-id: getProject
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/projects.js
       description: Get Informations about project
       tags:
         - Projects
@@ -178,6 +199,16 @@ paths:
                     type: integer
                     description: Optional number of samples that can be provided by the project for display purpose
                     default: null
+                    nullable: true
+    delete:
+      x-eov-operation-id: deleteProject
+      x-eov-operation-handler: debiai/projects.js
+      description: Delete a project
+      tags:
+        - Projects
+      responses:
+        "200":
+          description: Project deleted
   /debiai/projects/{projectId}/data-id-list:
     parameters:
       - in: path
@@ -186,7 +217,7 @@ paths:
           minLength: 1
           example: Project 1
         name: projectId
-        description: Project id to get the data ID list
+        description: Project id
         required: true
       - in: query
         schema:
@@ -218,10 +249,9 @@ paths:
         name: analysisEnd
         description: True if it's the last request of an analysis
         required: false
-
     get:
       x-eov-operation-id: dataIdList
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/projects.js
       description: >-
         Get a ID list of all available data in the project, this endpoint need to
         work with the project list provided in the info endoint
@@ -256,7 +286,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project id to get the data ID list
+        description: project id
         required: true
       - in: query
         schema:
@@ -278,7 +308,7 @@ paths:
         required: false
     post:
       x-eov-operation-id: data
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/projects.js
       description: >-
         Get the data to be displayed into DebiAI from the given data ID list,
         the requested IDs will be those given by the endpoint dataIdList. The
@@ -333,7 +363,7 @@ paths:
         required: true
     get:
       x-eov-operation-id: modelList
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/models.js
       description: Tell DebiAI which models are available for the given project
       tags:
         - Models
@@ -367,7 +397,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project id to get the data ID list
+        description: project id
         required: true
       - schema:
           type: string
@@ -375,11 +405,11 @@ paths:
           example: Model 1
         name: modelId
         in: path
-        description: Model id to get the data ID list
+        description: Model id
         required: true
     get:
       x-eov-operation-id: modelEvaluatedDataIdList
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/models.js
       description: Tell DebiAI which models are available for the given project
       tags:
         - Models
@@ -403,7 +433,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the data ID list
+        description: project id
         required: true
       - schema:
           type: string
@@ -411,11 +441,11 @@ paths:
           example: Model 1
         name: modelId
         in: path
-        description: Model id to get the data ID list
+        description: Model id
         required: true
     post:
       x-eov-operation-id: modelResults
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/models.js
       description: Gives the results of a model from a given data ID list
       tags:
         - Models
@@ -452,6 +482,33 @@ paths:
                   - type: string
                   - type: number
                   - type: integer
+  /debiai/projects/{projectId}/models/{modelId}:
+    parameters:
+      - schema:
+          type: string
+          minLength: 1
+          example: Project 1
+        name: projectId
+        in: path
+        description: project id
+        required: true
+      - schema:
+          type: string
+          minLength: 1
+          example: Model 1
+        name: modelId
+        in: path
+        description: Model id
+        required: true
+    delete:
+      x-eov-operation-id: deleteModel
+      x-eov-operation-handler: debiai/models.js
+      description: Delete a model
+      tags:
+        - Models
+      responses:
+        "200":
+          description: The model has been deleted
   ######  ---------------------- SELECTIONS ---------------------- ######
   /debiai/projects/{projectId}/selections:
     parameters:
@@ -461,11 +518,11 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the selection list
+        description: project id to get the selection list
         required: true
     get:
       x-eov-operation-id: selectionList
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/selections.js
       description: Tell DebiAI which selections are available for the given project
       tags:
         - Selections
@@ -493,7 +550,7 @@ paths:
                       default: 0
     post:
       x-eov-operation-id: createSelection
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/selections.js
       description: Create a selection with id List send in body
       tags:
         - Selections
@@ -523,7 +580,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the data ID list
+        description: project id
         required: true
       - schema:
           type: string
@@ -535,7 +592,7 @@ paths:
         required: true
     get:
       x-eov-operation-id: selectionDataIdList
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/selections.js
       description: Tell DebiAI the samples selected by the a selection
       tags:
         - Selections
@@ -559,7 +616,7 @@ paths:
           example: Project 1
         name: projectId
         in: path
-        description: project name to get the selection to delete
+        description: project id to get the selection to delete
         required: true
       - schema:
           type: string
@@ -571,7 +628,7 @@ paths:
         required: true
     delete:
       x-eov-operation-id: deleteSelection
-      x-eov-operation-handler: debiai.js
+      x-eov-operation-handler: debiai/selections.js
       description: Delete a single selection
       tags:
         - Selections

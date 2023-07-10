@@ -41,15 +41,15 @@ exports.getProject = async (req, res) => {
       */
     const projectId = req.openapi.pathParams.projectId;
 
-    // Project value will be the collums and expected results for the project
+    // Project value will be the column and expected results for the project
     const projectValue = {
       name: "Project 1",
       columns: [
         // No need to add the "id" column, it will be added automatically
         { name: "Context 1", category: "context", type: "text" },
-        { name: "Ground thruth 1", category: "groundtruth", type: "number" },
+        { name: "Ground truth 1", category: "groundtruth", type: "number" },
         { name: "Input 1", category: "input" }, // type is not required, it will be detected automatically
-        { name: "Other col", group: "My group"}, // Category is not required, it will be set to "other" by default
+        { name: "Other col", group: "My group" }, // Category is not required, it will be set to "other" by default
         // You can also add a group to your columns, it will be used to group the columns in the interface
 
         // category can be : context, groundtruth, input, other. Default category is other
@@ -85,7 +85,7 @@ exports.dataIdList = async (req, res) => {
     if (requestedProjectId !== "project_1")
       res.status(404).send("Can't find project " + requestedProjectId);
 
-    // DebiAI provide informations about the analysis to help manage the data requests
+    // DebiAI provide information about the analysis to help manage the data requests
     const analysis = {
       id: req.query.analysisId,
       start: req.query.analysisStart,
@@ -100,9 +100,9 @@ exports.dataIdList = async (req, res) => {
     // We gather the data ids from the database
     const projectDataIds = [1, 2, 3];
     // The id of the data are 1, 2, 3, they will used by DebiAI to request the data
-    // They can be in any format, but please avoid caracters like : / ( ) < > . ; or ,
+    // They can be in any format, but please avoid characters like : / ( ) < > . ; or ,
 
-    // In case of a number of sample > maxSampleIdByRequest, we will ask for a sequensed amount of sample ID
+    // In case of a number of sample > maxSampleIdByRequest, we will ask for a sequenced amount of sample ID
     // Set variables only if from & to in query parameters*
     const from = req.query.from;
     const to = req.query.to;
@@ -129,7 +129,7 @@ exports.data = (req, res) => {
     if (requestedProjectId !== "project_1")
       res.status(404).send("Can't find project " + requestedProjectId);
 
-    // DebiAI provide informations about the analysis to help manage the data requests
+    // DebiAI provide information about the analysis to help manage the data requests
     const analysis = {
       id: req.query.analysisId,
       start: req.query.analysisStart,

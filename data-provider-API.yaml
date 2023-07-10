@@ -22,17 +22,17 @@ paths:
     get:
       x-eov-operation-id: info
       x-eov-operation-handler: debiai/info.js
-      description: Get some general informations about how DebiAI can use this service
+      description: Get some general information about how DebiAI can use this service
       tags:
         - Info
       responses:
         "200":
-          description: Success, Return informations about data Provider requests limits
+          description: Success, Return information about data Provider requests limits
           content:
             application/json:
               schema:
                 type: object
-                description: Informations to deal with data provider data requests
+                description: Information to deal with data provider data requests
                 properties:
                   version:
                     type: string
@@ -53,7 +53,7 @@ paths:
 
                   canDelete:
                     type: object
-                    description: Informations about what can be deleted by DebiAI
+                    description: Information about what can be deleted by DebiAI
                     properties:
                       projects:
                         type: boolean
@@ -72,12 +72,12 @@ paths:
     get:
       x-eov-operation-id: getProjectsOverview
       x-eov-operation-handler: debiai/projects.js
-      description: Get some general informations about project accessible from this data provider
+      description: Get some general information about project accessible from this data provider
       tags:
         - Projects
       responses:
         "200":
-          description: Projets informations
+          description: Projects information
           content:
             application/json:
               schema:
@@ -121,17 +121,17 @@ paths:
     get:
       x-eov-operation-id: getProject
       x-eov-operation-handler: debiai/projects.js
-      description: Get Informations about project
+      description: Get Information about project
       tags:
         - Projects
       responses:
         "200":
-          description: Projets informations
+          description: Projects information
           content:
             application/json:
               schema:
                 type: object
-                description: Structural informations about a project like the columns and the expected results
+                description: Structural information about a project like the columns and the expected results
                 properties:
                   name:
                     type: string
@@ -151,7 +151,7 @@ paths:
                           type: string
                           description: >-
                             Category of the column that will be used to select
-                            the column more easely
+                            the column more easily
                           default: other
                           enum:
                             - other
@@ -173,6 +173,12 @@ paths:
                             default by DebiAI, but it can be forced. Forcing a
                             type can be useful if we want to consider numbers
                             like 10, 100, 1000 as categories.
+                        group:
+                          type: string
+                          description: >-
+                            Group of the column, can be used for display purpose
+                          minLength: 1
+                          example: Image
                       required:
                         - name
                   expectedResults:
@@ -193,6 +199,12 @@ paths:
                             - number
                             - boolean
                           default: auto
+                        group:
+                          type: string
+                          description: >-
+                            Group of the column, can be used for display purpose
+                          minLength: 1
+                          example: Image
                       required:
                         - name
                   nbSamples:
@@ -254,7 +266,7 @@ paths:
       x-eov-operation-handler: debiai/projects.js
       description: >-
         Get a ID list of all available data in the project, this endpoint need to
-        work with the project list provided in the info endoint
+        work with the project list provided in the info endpoint
 
         A those ID will be used by DebiAI to request data or results later
       tags:

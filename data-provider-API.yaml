@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: DebiAI data provider API
-  version: 0.22.1
+  version: 0.24.0
   description: >-
     This API describe what the endpoints a service that want to be a DebiAI data
     provider need to have
@@ -37,7 +37,7 @@ paths:
                   version:
                     type: string
                     description: The version of the data provider
-                    example: "0.20.0"
+                    example: "1.0.0"
                   maxSampleIdByRequest:
                     type: integer
                     description: Optional number of samples id that can be provided by the project for display purpose

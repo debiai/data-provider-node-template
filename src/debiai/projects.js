@@ -49,14 +49,18 @@ exports.getProject = async (req, res) => {
         { name: "Context 1", category: "context", type: "text" },
         { name: "Ground thruth 1", category: "groundtruth", type: "number" },
         { name: "Input 1", category: "input" }, // type is not required, it will be detected automatically
-        { name: "Other col" }, // Category is not required, it will be set to "other" by default
+        { name: "Other col", group: "My group"}, // Category is not required, it will be set to "other" by default
+        // You can also add a group to your columns, it will be used to group the columns in the interface
 
         // category can be : context, groundtruth, input, other. Default category is other
         // Type can be : auto, text, number, and boolean. Default type is auto
       ],
       expectedResults: [
         { name: "Model prediction", type: "number" },
-        { name: "Model error", type: "number" },
+        { name: "Model error", type: "number", group: "Errors" },
+        // The expected results are the columns that are used to provide information about the model predictions
+        // For example, you can add the model predictions and some metrics like the model errors
+        // You can also group the expected results in the interface with the group property
       ],
       nbSamples: 10,
     };

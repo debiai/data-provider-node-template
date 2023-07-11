@@ -121,7 +121,7 @@ paths:
     get:
       x-eov-operation-id: getProject
       x-eov-operation-handler: debiai/projects.js
-      description: Get Information about project
+      description: Get information about project
       tags:
         - Projects
       responses:
@@ -177,7 +177,7 @@ paths:
                           type: string
                           description: >-
                             Group of the column, can be used for display purpose
-                          minLength: 1
+                          default: ""
                           example: Image
                       required:
                         - name
@@ -203,7 +203,7 @@ paths:
                           type: string
                           description: >-
                             Group of the column, can be used for display purpose
-                          minLength: 1
+                          default: ""
                           example: Image
                       required:
                         - name
@@ -401,6 +401,7 @@ paths:
                       type: number
                       description: Number of results that the model can provide
                       default: 0
+                      nullable: true
   /debiai/projects/{projectId}/models/{modelId}/evaluated-data-id-list:
     parameters:
       - schema:
@@ -519,7 +520,7 @@ paths:
       tags:
         - Models
       responses:
-        "200":
+        "204":
           description: The model has been deleted
   ######  ---------------------- SELECTIONS ---------------------- ######
   /debiai/projects/{projectId}/selections:
@@ -560,6 +561,7 @@ paths:
                       type: number
                       description: Number of samples in the selection
                       default: 0
+                      nullable: true
     post:
       x-eov-operation-id: createSelection
       x-eov-operation-handler: debiai/selections.js

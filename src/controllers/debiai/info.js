@@ -7,7 +7,7 @@
 // - The maximum number of results from a model to request
 // - If DebiAI can be used to delete project, selections or models
 
-const pjson = require("./../../package.json");
+const pjson = require("../../../package.json");
 
 exports.info = (req, res) => {
   const version = pjson.version;

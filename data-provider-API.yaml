@@ -108,16 +108,14 @@ paths:
                       default: null
                       nullable: true
                     creationDate:
-                      type: string
+                      type: integer
                       description: Timestamp of the project creation
                       example: 1697814247211
-                      format: int64
                       nullable: true
                     updateDate:
-                      type: string
+                      type: integer
                       description: Timestamp of the project last update
                       example: 1697814247211
-                      format: int64
                       nullable: true
   /debiai/projects/{projectId}:
     parameters:
@@ -224,16 +222,14 @@ paths:
                     default: null
                     nullable: true
                   creationDate:
-                    type: string
+                    type: integer
                     description: Timestamp of the project creation
                     example: 1697814247211
-                    format: int64
                     nullable: true
                   updateDate:
-                    type: string
+                    type: integer
                     description: Timestamp of the project last update
                     example: 1697814247211
-                    format: int64
                     nullable: true
     delete:
       x-eov-operation-id: deleteProject
@@ -426,10 +422,9 @@ paths:
                       default: 0
                       nullable: true
                     creationDate:
-                      type: string
+                      type: integer
                       description: Timestamp of the model creation
                       example: 1697814247211
-                      format: int64
                       nullable: true
   /debiai/projects/{projectId}/models/{modelId}/evaluated-data-id-list:
     parameters:
@@ -592,10 +587,9 @@ paths:
                       default: 0
                       nullable: true
                     creationDate:
-                      type: string
+                      type: integer
                       description: Timestamp of the selection creation
                       example: 1697814247211
-                      format: int64
                       nullable: true
     post:
       x-eov-operation-id: createSelection

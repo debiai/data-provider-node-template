@@ -50,7 +50,7 @@ exports.selectionList = (req, res) => {
   try {
     const requestedProjectId = req.openapi.pathParams.projectId;
 
-    if (requestedProjectId !== "project_1")
+    if (requestedProjectId !== "RECP")
       res.status(404).send("Can't find project " + requestedProjectId);
 
     // Send the selections list without the data id list
@@ -79,7 +79,7 @@ exports.selectionDataIdList = (req, res) => {
     const requestedProjectId = req.openapi.pathParams.projectId;
     const requestedSelectionId = req.openapi.pathParams.selectionId;
 
-    if (requestedProjectId !== "project_1")
+    if (requestedProjectId !== "RECP")
       res.status(404).send("Can't find project " + requestedProjectId);
 
     const selection = selections.find(
@@ -124,7 +124,7 @@ exports.createSelection = (req, res) => {
     const selectionName = req.body.name;
     const selectionsDataIds = req.body.idList; // Array of data ids
 
-    if (requestedProjectId !== "project_1")
+    if (requestedProjectId !== "RECP")
       res.status(404).send("Can't find project " + requestedProjectId);
 
     selections.push({
@@ -151,7 +151,7 @@ exports.deleteSelection = (req, res) => {
     const requestedProjectId = req.openapi.pathParams.projectId;
     const requestedSelectionId = req.openapi.pathParams.selectionId;
 
-    if (requestedProjectId !== "project_1")
+    if (requestedProjectId !== "RECP")
       res.status(404).send("Can't find project " + requestedProjectId);
 
     const selectionIndex = selections.findIndex(

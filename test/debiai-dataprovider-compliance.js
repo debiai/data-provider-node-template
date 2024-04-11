@@ -287,7 +287,7 @@ describe("Testing the debiai dataprovider compliance", function () {
   });
 
   it("should return a 404 error : selection not found", (done) => {
-    const projectId = "project_1";
+    const projectId = "RECP";
     const selectionId = "selection_that_doesnt_exist";
     request(app)
       .get(

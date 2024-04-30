@@ -31,6 +31,11 @@ exports.modelList = (req, res) => {
         id: "model_1",
         name: "Model 1",
         nbResults: 2,
+        metadata: {
+          name: "Author's name",
+          input_features: ["feature1", "feature2"],
+          notes: "Test metadata",
+        },
       },
       {
         id: "model_2",

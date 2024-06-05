@@ -426,6 +426,10 @@ paths:
                       description: Timestamp of the model creation
                       example: 1697814247211
                       nullable: true
+                    metadata:
+                      type: object
+                      description: Metadata of the model
+                      nullable: true
   /debiai/projects/{projectId}/models/{modelId}/evaluated-data-id-list:
     parameters:
       - schema:
@@ -590,6 +594,10 @@ paths:
                       type: integer
                       description: Timestamp of the selection creation
                       example: 1697814247211
+                      nullable: true
+                    metadata:
+                      type: object
+                      description: Metadata of the selection
                       nullable: true
     post:
       x-eov-operation-id: createSelection

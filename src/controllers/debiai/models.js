@@ -32,9 +32,41 @@ exports.modelList = (req, res) => {
         name: "Model 1",
         nbResults: 2,
         metadata: {
-          name: "Author's name",
-          input_features: ["feature1", "feature2"],
-          notes: "Test metadata",
+          author_name: ["Alice", "Bob", "Charlie"],
+          model_names: ["Linear Regression", "Random Forest", "Neural Network"],
+          input_features: [
+            ["feature1", "feature2"],
+            ["feature1", "feature2", "feature3"],
+            ["feature1", "feature2", "feature4"],
+          ],
+          notes: [
+            "Baseline model",
+            "Tuned with grid search",
+            "Deep learning model",
+          ],
+          models_data: [
+            {
+              ModelID: "M1",
+              ModelName: "Linear Regression",
+              Author: "Alice",
+              InputFeatures: ["feature1", "feature2"],
+              Notes: "Baseline model",
+            },
+            {
+              ModelID: "M2",
+              ModelName: "Random Forest",
+              Author: "Bob",
+              InputFeatures: ["feature1", "feature2", "feature3"],
+              Notes: "Tuned with grid search",
+            },
+            {
+              ModelID: "M3",
+              ModelName: "Neural Network",
+              Author: "Charlie",
+              InputFeatures: ["feature1", "feature2", "feature4"],
+              Notes: "Deep learning model",
+            },
+          ],
         },
       },
       {

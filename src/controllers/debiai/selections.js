@@ -20,12 +20,52 @@ const selections = [
     id: "first-selection",
     name: "First selection",
     nbSamples: 2,
+    metadata: {
+      metadata: {
+        samples: ["S1", "S2"],
+        cols: ["SampleID", "Species", "Weight", "Height"],
+        data: [
+          {
+            SampleID: "S1",
+            Species: "Homo sapiens",
+            Weight: 70.5,
+            Height: 175,
+          },
+          {
+            SampleID: "S2",
+            Species: "Mus musculus",
+            Weight: 25.3,
+            Height: 150,
+          },
+        ],
+      },
+    },
 
     dataIds: [1, 2],
   },
   {
     id: "second-selection",
     name: "second selection",
+    metadata: {
+      metadata: {
+        samples: ["S1", "S2"],
+        cols: ["SampleID", "Species", "Weight", "Height"],
+        data: [
+          {
+            SampleID: "S1",
+            Species: "Homo sapiens",
+            Weight: 70.5,
+            Height: 175,
+          },
+          {
+            SampleID: "S2",
+            Species: "Mus musculus",
+            Weight: 25.3,
+            Height: 150,
+          },
+        ],
+      },
+    },
 
     dataIds: [2, 3],
   },
@@ -45,6 +85,7 @@ exports.selectionList = (req, res) => {
               "id": "string",
               "name": "string",      // Optional
               "nbSamples": "number"  // Optional
+              "metadata": "dict"   // Optional
           }]
     */
   try {
@@ -59,6 +100,7 @@ exports.selectionList = (req, res) => {
         id: selection.id,
         name: selection.name,
         nbSamples: selection.nbSamples,
+        metadata: selection.metadata,
       };
     });
 

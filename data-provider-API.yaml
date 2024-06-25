@@ -176,6 +176,8 @@ paths:
                             - text
                             - number
                             - boolean
+                            - list
+                            - dict
                           default: auto
                           description: >-
                             The type of the column values, it will be guessed by
@@ -363,13 +365,7 @@ paths:
                     the number of column provided with the info path. Each n value will be mapped to
                     the n'th column.
 
-                    Null values aren't allowed at the moment
-                  items:
-                    anyOf:
-                      - type: string
-                      - type: number
-                      - type: integer
-                      - type: boolean
+                    Null values aren't allowed at the moment, but any type can be used
       requestBody:
         content:
           application/json:

@@ -20,6 +20,11 @@ const selections = [
     id: "first-selection",
     name: "First selection",
     nbSamples: 2,
+    metadata: {
+      name: "Author's name",
+      input_features: ["feature1", "feature2"],
+      notes: "Test metadata",
+    },
 
     dataIds: [1, 2],
   },
@@ -45,6 +50,7 @@ exports.selectionList = (req, res) => {
               "id": "string",
               "name": "string",      // Optional
               "nbSamples": "number"  // Optional
+              "metadata": { ... }    // Optional
           }]
     */
   try {
@@ -59,6 +65,7 @@ exports.selectionList = (req, res) => {
         id: selection.id,
         name: selection.name,
         nbSamples: selection.nbSamples,
+        metadata: selection.metadata,
       };
     });
 

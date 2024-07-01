@@ -20,10 +20,12 @@ exports.getProjectsOverview = async (req, res) => {
   try {
     const projects = {
       project_1: {
-        name: "Project 1",
+        name: "Web data-provider project",
         nbSamples: 10,
         nbSelections: 2,
         nbModels: 1,
+        creationDate: 1697814247211,
+        updateDate: 1707914347211,
       },
     };
 
@@ -47,6 +49,8 @@ exports.getProject = async (req, res) => {
       columns: [
         // No need to add the "id" column, it will be added automatically
         { name: "Context 1", category: "context", type: "text" },
+        { name: "Context 2", category: "context", type: "list" },
+        { name: "Context 3", category: "context", type: "dict" },
         { name: "Ground truth 1", category: "groundtruth", type: "number" },
         { name: "Input 1", category: "input" }, // type is not required, it will be detected automatically
         { name: "Other col", group: "My group" }, // Category is not required, it will be set to "other" by default
@@ -63,6 +67,8 @@ exports.getProject = async (req, res) => {
         // You can also group the expected results in the interface with the group property
       ],
       nbSamples: 10,
+      creationDate: 1697814247211,
+      updateDate: 1707914347211,
     };
 
     // To set name, columns and expected results to the variable we send to Debiai
@@ -138,15 +144,36 @@ exports.data = (req, res) => {
 
     // If the requested ids are [1, 2, 3], the following data will be returned:
     const projectData = {
-      1: ["Context a", 11, 4, false],
-      2: ["Context b", 23, 2, true],
-      3: ["Context c", -2, 0, true],
+      1: [
+        "Context a",
+        [18, 9, 7, 9],
+        { tags: ["c"], sub_context: {} },
+        11,
+        4,
+        false,
+      ],
+      2: [
+        "Context b",
+        [20, 2, 7, 9],
+        { tags: ["a", "b", "c"], sub_context: {} },
+        23,
+        2,
+        true,
+      ],
+      3: [
+        "Context c",
+        [19, 10, 8, 3],
+        { tags: ["a", "c"], sub_context: {} },
+        -2,
+        0,
+        true,
+      ],
     };
 
     // The object keys are the data ids and the object values are the data
     // The data array MUST follow the columns order defined in the project info
     // Data containing '', null or undefined aren't supported by DebiAI at the moment
-    // Data in a format other than string or number (array, objects, ...) aren't supported by DebiAI
+    // Data in a array or objects format are supported since the DebiAI unfolding update
 
     const dataToReturn = {};
     requestedDataIds.forEach((id) => {

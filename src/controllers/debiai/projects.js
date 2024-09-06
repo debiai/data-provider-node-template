@@ -15,18 +15,45 @@
 // - Get the project data from a list of data ids
 // - Delete a project (optional)
 
+// This data provider will provide a number of project with a certain number of random data
+
+const sampleNumberToCreate = [
+  10,
+  // 100,
+  1000, 10000,
+  //   50000,
+  100000, 1000000, 10000000,
+  //   3000000,
+  // 4000000,
+  // 5000000,
+  // 6000000,
+  // 7000000,
+  // 8000000,
+  // 9000000,
+  //   100000000000000000,
+];
+
+const projectToCreate = sampleNumberToCreate.map((sampleNumber) => {
+  return { name: `P with ${sampleNumber} samples`, sampleNumber };
+});
+
+const randomContext = () => {
+  const context = ["A", "B", "C", "D", "E", "F", "G"];
+  return context[Math.floor(Math.random() * context.length)];
+};
+
 exports.getProjectsOverview = async (req, res) => {
   // Return the list of projects with their names and values their numbers of samples, selections and models
   try {
-    const projects = {
-      project_1: {
-        name: "Project 1",
-        nbSamples: 10,
-        nbSelections: 2,
-        nbModels: 1,
-      },
-    };
-
+    const projects = {};
+    for (const project of projectToCreate) {
+      projects[project.name] = {
+        name: project.name,
+        nbSamples: project.sampleNumber,
+        nbSelections: 0,
+        nbModels: 0,
+      };
+    }
     res.status(200).send(projects);
   } catch (error) {
     console.log(error);
@@ -40,7 +67,11 @@ exports.getProject = async (req, res) => {
           Return a single project with his columns and results 
       */
     const projectId = req.openapi.pathParams.projectId;
-
+    // Check if projectId exists
+    if (!projectToCreate.find((p) => p.name === projectId)) {
+      res.status(404).send("Can't find project " + projectId);
+      return;
+    }
     // Project value will be the column and expected results for the project
     const projectValue = {
       name: "Project 1",
@@ -49,7 +80,6 @@ exports.getProject = async (req, res) => {
         { name: "Context 1", category: "context", type: "text" },
         { name: "Ground truth 1", category: "groundtruth", type: "number" },
         { name: "Input 1", category: "input" }, // type is not required, it will be detected automatically
-        { name: "Other col", group: "My group" }, // Category is not required, it will be set to "other" by default
         // You can also add a group to your columns, it will be used to group the columns in the interface
 
         // category can be : context, groundtruth, input, other. Default category is other
@@ -62,15 +92,12 @@ exports.getProject = async (req, res) => {
         // For example, you can add the model predictions and some metrics like the model errors
         // You can also group the expected results in the interface with the group property
       ],
-      nbSamples: 10,
+      nbSamples: projectToCreate.find((p) => p.name === projectId).sampleNumber,
     };
 
     // To set name, columns and expected results to the variable we send to Debiai
-    if (projectId == "project_1") {
-      res.status(200).send(projectValue);
-    } else {
-      res.status(404).send("Can't find project " + projectId);
-    }
+    res.status(200).send(projectValue);
+    console.log(projectId);
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
@@ -81,9 +108,13 @@ exports.dataIdList = async (req, res) => {
   // Return the list of the project data ids
   try {
     const requestedProjectId = req.openapi.pathParams.projectId;
-
-    if (requestedProjectId !== "project_1")
+    const project = projectToCreate.find((p) => p.name === requestedProjectId);
+    if (project === undefined) {
       res.status(404).send("Can't find project " + requestedProjectId);
+      return;
+    }
+
+    const requestedSampleNumber = project.sampleNumber;
 
     // DebiAI provide information about the analysis to help manage the data requests
     const analysis = {
@@ -98,7 +129,6 @@ exports.dataIdList = async (req, res) => {
     // - end : A boolean to know if it's the last request for this analysis
 
     // We gather the data ids from the database
-    const projectDataIds = [1, 2, 3];
     // The id of the data are 1, 2, 3, they will used by DebiAI to request the data
     // They can be in any format, but please avoid characters like : / ( ) < > . ; or ,
 
@@ -107,11 +137,24 @@ exports.dataIdList = async (req, res) => {
     const from = req.query.from;
     const to = req.query.to;
 
+    console.log(
+      `Requested ${requestedSampleNumber} samples from`,
+      from,
+      "to",
+      to
+    );
+
     if (from !== undefined && to !== undefined) {
       // Fetch data with from and to filter;
+      const projectDataIds = Array(to - from + 1)
+        .fill()
+        .map((_, i) => String(i + 1 + from));
       // Add + 1 because slice function excluded last value
-      res.status(200).send(projectDataIds.slice(from, to + 1));
+      res.status(200).send(projectDataIds);
     } else {
+      const projectDataIds = Array(requestedSampleNumber)
+        .fill()
+        .map((_, i) => String(i + 1));
       res.status(200).send(projectDataIds);
     }
   } catch (error) {
@@ -126,8 +169,11 @@ exports.data = (req, res) => {
     const requestedProjectId = req.openapi.pathParams.projectId;
     const requestedDataIds = req.body; // List of data ids requested by DebiAI
 
-    if (requestedProjectId !== "project_1")
+    const project = projectToCreate.find((p) => p.name === requestedProjectId);
+    if (project === undefined) {
       res.status(404).send("Can't find project " + requestedProjectId);
+      return;
+    }
 
     // DebiAI provide information about the analysis to help manage the data requests
     const analysis = {
@@ -136,23 +182,11 @@ exports.data = (req, res) => {
       end: req.query.analysisEnd,
     };
 
-    // If the requested ids are [1, 2, 3], the following data will be returned:
-    const projectData = {
-      1: ["Context a", 11, 4, false],
-      2: ["Context b", 23, 2, true],
-      3: ["Context c", -2, 0, true],
-    };
-
-    // The object keys are the data ids and the object values are the data
-    // The data array MUST follow the columns order defined in the project info
-    // Data containing '', null or undefined aren't supported by DebiAI at the moment
-    // Data in a format other than string or number (array, objects, ...) aren't supported by DebiAI
-
     const dataToReturn = {};
     requestedDataIds.forEach((id) => {
-      dataToReturn[id] = projectData[id];
+      //   dataToReturn[id] = [randomContext(), Math.random() * 100, id];
+      dataToReturn[id] = [0, 0, id];
     });
-
     res.status(200).send(dataToReturn);
   } catch (error) {
     console.log(error);

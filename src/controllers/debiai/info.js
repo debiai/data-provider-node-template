@@ -24,8 +24,8 @@ exports.info = (req, res) => {
   */
   const infoResponse = {
     version: version,
-    maxSampleIdByRequest: 10000,
-    maxSampleDataByRequest: 2000,
+    maxSampleIdByRequest: 100000,
+    maxSampleDataByRequest: 20000,
     maxResultByRequest: 5000,
 
     canDelete: {

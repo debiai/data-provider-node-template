@@ -34,7 +34,7 @@ const sampleNumberToCreate = [
 ];
 
 const projectToCreate = sampleNumberToCreate.map((sampleNumber) => {
-  return { name: `P with ${sampleNumber} samples`, sampleNumber };
+  return { name: `${sampleNumber} samples project`, sampleNumber };
 });
 
 const randomContext = () => {
